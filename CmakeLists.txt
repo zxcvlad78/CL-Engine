@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 4.0.2 FATAL_ERROR)
+
+project(CL-Engine)
+
+add_executable(CL-Engine src/main.cpp)
