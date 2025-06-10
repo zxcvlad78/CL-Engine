@@ -2,14 +2,29 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+short window_width = 640;
+short window_height = window_width / 16 * 9;    
+
+char NAME[] = "CL Engine";
+
+void glfwWindowSizeCallback(GLFWwindow* window, int width, int height)
+{
+    window_width = width;
+    window_height = height;
+
+    glViewport(0, 0, window_width, window_height);
+}
+
+void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+}
+
 int main(void)
 {
-    short WIDTH = 640;
-    short HEIGTH = WIDTH / 16 * 9;    
-
-    char NAME[] = "CL Engine";
-
-
     if (!glfwInit())
     {
         std::cout << "glfwInit failed" << std::endl;
@@ -21,7 +36,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window;
-    window = glfwCreateWindow(WIDTH, HEIGTH, NAME, NULL, NULL);
+    window = glfwCreateWindow(window_width, window_height, NAME, nullptr, nullptr);
     if (!window)
     {
         std::cout << "glfwCreateWindow" << std::endl;
@@ -29,6 +44,9 @@ int main(void)
         return -1;
     }
 
+    glfwSetWindowSizeCallback(window, glfwWindowSizeCallback);
+    glfwSetKeyCallback(window, glfwKeyCallback);
+    
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGL()) {
@@ -36,13 +54,8 @@ int main(void)
         return -1;
     }
 
-    std::cout << "OpenGL version: " << GLVersion.major << '.' << GLVersion.minor << std::endl;
-
-
-
-
-    //std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-    //std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl; 
+    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl; 
 
     glClearColor(1,0,0,1);
 
