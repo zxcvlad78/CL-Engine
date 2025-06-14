@@ -4,7 +4,13 @@ set(PROJECT_NAME CL-Engine)
 
 project(${PROJECT_NAME})
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(${PROJECT_NAME} 
+    src/main.cpp
+    src/renderer/shader_program.cpp
+    src/renderer/shader_program.h
+    )
 
 set(GLFW_BUILDS_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILDS_TESTS OFF CACHE BOOL "" FORCE)
