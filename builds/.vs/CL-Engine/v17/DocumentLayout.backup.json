@@ -1,0 +1,52 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\dev\\git-projects\\CL-Engine\\builds\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B56453C3-49A0-3380-AFCB-33A6982F79FD}|CL-Engine.vcxproj|C:\\dev\\git-projects\\CL-Engine\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B56453C3-49A0-3380-AFCB-33A6982F79FD}|CL-Engine.vcxproj|C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\dev\\git-projects\\CL-Engine\\src\\main.cpp",
+              "RelativeDocumentMoniker": "..\\src\\main.cpp",
+              "ToolTip": "C:\\dev\\git-projects\\CL-Engine\\src\\main.cpp",
+              "RelativeToolTip": "..\\src\\main.cpp",
+              "ViewState": "AgIAADgAAAAAAAAAAADwv1QAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-14T00:59:29.235Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "shader_program.cpp",
+              "DocumentMoniker": "C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.cpp",
+              "RelativeDocumentMoniker": "..\\src\\renderer\\shader_program.cpp",
+              "ToolTip": "C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.cpp",
+              "RelativeToolTip": "..\\src\\renderer\\shader_program.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-06-14T01:00:55.883Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

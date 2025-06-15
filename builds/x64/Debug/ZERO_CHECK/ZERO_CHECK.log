@@ -1,0 +1,12 @@
+﻿  1>Checking Build System
+  CMake is re-running because C:/dev/git-projects/CL-Engine/builds/CMakeFiles/generate.stamp is out-of-date.
+    the file 'C:/dev/git-projects/CL-Engine/CMakeLists.txt'
+    is newer than 'C:/dev/git-projects/CL-Engine/builds/CMakeFiles/generate.stamp.depend'
+    result='-1'
+  -- Selecting Windows SDK version 10.0.22621.0 to target Windows 10.0.22631.
+  -- Including Win32 support
+  -- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+  -- Documentation generation requires Doxygen 1.9.8 or later
+  -- Configuring done (0.5s)
+  -- Generating done (0.3s)
+  -- Build files have been written to: C:/dev/git-projects/CL-Engine/builds

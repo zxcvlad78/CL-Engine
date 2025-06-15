@@ -1,0 +1,8 @@
+C:/dev/git-projects/CL-Engine/builds/CMakeFiles/CL-Engine.dir
+C:/dev/git-projects/CL-Engine/builds/CMakeFiles/ALL_BUILD.dir
+C:/dev/git-projects/CL-Engine/builds/CMakeFiles/ZERO_CHECK.dir
+C:/dev/git-projects/CL-Engine/builds/external/glfw/CMakeFiles/ALL_BUILD.dir
+C:/dev/git-projects/CL-Engine/builds/external/glfw/src/CMakeFiles/glfw.dir
+C:/dev/git-projects/CL-Engine/builds/external/glfw/src/CMakeFiles/update_mappings.dir
+C:/dev/git-projects/CL-Engine/builds/external/glad/CMakeFiles/glad.dir
+C:/dev/git-projects/CL-Engine/builds/external/glad/CMakeFiles/ALL_BUILD.dir

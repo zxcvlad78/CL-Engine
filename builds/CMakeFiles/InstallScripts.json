@@ -1,0 +1,11 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/dev/git-projects/CL-Engine/builds/cmake_install.cmake",
+		"C:/dev/git-projects/CL-Engine/builds/external/glfw/cmake_install.cmake",
+		"C:/dev/git-projects/CL-Engine/builds/external/glfw/src/cmake_install.cmake",
+		"C:/dev/git-projects/CL-Engine/builds/external/glfw/docs/cmake_install.cmake",
+		"C:/dev/git-projects/CL-Engine/builds/external/glad/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
