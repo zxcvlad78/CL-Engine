@@ -3,10 +3,19 @@
   "WorkspaceRootPath": "C:\\dev\\git-projects\\CL-Engine\\builds\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B56453C3-49A0-3380-AFCB-33A6982F79FD}|CL-Engine.vcxproj|C:\\dev\\git-projects\\CL-Engine\\src\\resources\\resource_manager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B56453C3-49A0-3380-AFCB-33A6982F79FD}|CL-Engine.vcxproj|C:\\dev\\git-projects\\CL-Engine\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B56453C3-49A0-3380-AFCB-33A6982F79FD}|CL-Engine.vcxproj|C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B56453C3-49A0-3380-AFCB-33A6982F79FD}|CL-Engine.vcxproj|C:\\dev\\git-projects\\CL-Engine\\src\\resources\\resource_manager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B56453C3-49A0-3380-AFCB-33A6982F79FD}|CL-Engine.vcxproj|C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -16,30 +25,69 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "main.cpp",
               "DocumentMoniker": "C:\\dev\\git-projects\\CL-Engine\\src\\main.cpp",
               "RelativeDocumentMoniker": "..\\src\\main.cpp",
               "ToolTip": "C:\\dev\\git-projects\\CL-Engine\\src\\main.cpp",
               "RelativeToolTip": "..\\src\\main.cpp",
-              "ViewState": "AgIAADgAAAAAAAAAAADwv1QAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAAAFgAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-14T00:59:29.235Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "resource_manager.cpp",
+              "DocumentMoniker": "C:\\dev\\git-projects\\CL-Engine\\src\\resources\\resource_manager.cpp",
+              "RelativeDocumentMoniker": "..\\src\\resources\\resource_manager.cpp",
+              "ToolTip": "C:\\dev\\git-projects\\CL-Engine\\src\\resources\\resource_manager.cpp",
+              "RelativeToolTip": "..\\src\\resources\\resource_manager.cpp",
+              "ViewState": "AgIAABcAAAAAAAAAAAAUwB8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-07-12T16:04:14.96Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "resource_manager.h",
+              "DocumentMoniker": "C:\\dev\\git-projects\\CL-Engine\\src\\resources\\resource_manager.h",
+              "RelativeDocumentMoniker": "..\\src\\resources\\resource_manager.h",
+              "ToolTip": "C:\\dev\\git-projects\\CL-Engine\\src\\resources\\resource_manager.h",
+              "RelativeToolTip": "..\\src\\resources\\resource_manager.h",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAUwBYAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-14T12:08:59.002Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "shader_program.h",
+              "DocumentMoniker": "C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.h",
+              "RelativeDocumentMoniker": "..\\src\\renderer\\shader_program.h",
+              "ToolTip": "C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.h",
+              "RelativeToolTip": "..\\src\\renderer\\shader_program.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-06-28T20:35:18.925Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "shader_program.cpp",
               "DocumentMoniker": "C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.cpp",
               "RelativeDocumentMoniker": "..\\src\\renderer\\shader_program.cpp",
               "ToolTip": "C:\\dev\\git-projects\\CL-Engine\\src\\renderer\\shader_program.cpp",
               "RelativeToolTip": "..\\src\\renderer\\shader_program.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAqAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-06-14T01:00:55.883Z",
               "EditorCaption": ""

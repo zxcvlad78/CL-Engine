@@ -1,5 +1,2 @@
 ﻿  main.cpp
-  resource_manager.cpp
-C:\dev\git-projects\CL-Engine\src\main.cpp(75,31): error C2065: 'vtx_shader': undeclared identifier
-  Generating Code...
-C:\dev\git-projects\CL-Engine\src\main.cpp(76,33): error C2065: 'frag_shader': undeclared identifier
+  CL-Engine.vcxproj -> C:\dev\git-projects\CL-Engine\builds\bin\Debug\CL-Engine.exe

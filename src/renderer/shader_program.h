@@ -10,7 +10,7 @@ namespace Renderer
     public:
         ShaderProgram(const std::string& vertex_shader, const std::string& fragment_shader);
         ~ShaderProgram();
-
+        
         bool is_compiled() const { return m_is_compiled; }
         void use() const;
 
