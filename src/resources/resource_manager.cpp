@@ -4,6 +4,7 @@
 #include "sstream"
 #include "fstream"
 #include "iostream"
+#include <filesystem>
 
 ResourceManager::ResourceManager(const std::string& executable_path)
 {
@@ -14,7 +15,7 @@ ResourceManager::ResourceManager(const std::string& executable_path)
 std::string ResourceManager::get_file_text(const std::string& relative_file_path) const
 {
 	std::ifstream f;
-	f.open(m_path + "/" + relative_file_path.c_str(), std::ios::in | std::ios::binary );
+	f.open(m_path + relative_file_path.c_str(), std::ios::in | std::ios::binary );
 
 	if (!f.is_open())
 	{

@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 
     {
         ResourceManager resource_manager(argv[0]);
-        auto p_default_shader_program = resource_manager.load_shaders("DefaultShader", "res/shaders/vertex.txt", "res/shaders/fragment.txt");
+        auto p_default_shader_program = resource_manager.load_shaders("DefaultShader", "/res/shaders/vertex.txt", "/res/shaders/fragment.txt");
         if (!p_default_shader_program)
         {
             std::cerr << "Cant create shader program: " << "DefaultShader" << std::endl;
@@ -123,7 +123,7 @@ int main(int argc, char** argv)
             // Render here
             glClear(GL_COLOR_BUFFER_BIT);
 
-
+            p_default_shader_program = resource_manager.load_shaders("DefaultShader", "/res/shaders/vertex.txt", "/res/shaders/fragment.txt");
             p_default_shader_program->use();
 
             glBindVertexArray(vao);
@@ -132,8 +132,6 @@ int main(int argc, char** argv)
             glfwSwapBuffers(window);
 
             glfwPollEvents();
-
-            std::cout << "GODOT 78" << std::endl;
 
         }
     }
