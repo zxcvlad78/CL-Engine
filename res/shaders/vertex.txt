@@ -1,4 +1,3 @@
-#version 460\n
 in vec3 color;
 out vec4 fragment_color;
 void main() {
