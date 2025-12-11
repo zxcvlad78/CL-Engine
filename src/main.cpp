@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "renderer/shader_program.h"
 #include "resources/resource_manager.h"
+#include "engine/engine.h"
 
 GLfloat points[] = {
     0.0f, 0.5f, 0.0f,
@@ -48,7 +49,8 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 
 int main(int argc, char** argv)
 {
-    
+    Engine engine;
+    engine.set_target_fps(144);
     
     if (!glfwInit())
     {
@@ -120,6 +122,9 @@ int main(int argc, char** argv)
             // Game Loop
         while (!glfwWindowShouldClose(window))
         {
+            engine.process();
+            std::cout << engine.get_fps() << std::endl;
+            
             // Render here
             glClear(GL_COLOR_BUFFER_BIT);
 
