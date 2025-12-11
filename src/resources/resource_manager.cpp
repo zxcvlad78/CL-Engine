@@ -1,3 +1,5 @@
+//resource_manager.cpp
+
 #include "resource_manager.h"
 #include "../renderer/shader_program.h"
 

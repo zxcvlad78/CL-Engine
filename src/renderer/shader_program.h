@@ -1,3 +1,5 @@
+//shader_program.h
+
 #pragma once
 
 #include <glad/glad.h>
@@ -11,6 +13,7 @@ namespace Renderer
         ShaderProgram(const std::string& vertex_shader, const std::string& fragment_shader);
         ~ShaderProgram();
         
+        GLuint get_id() const { return m_ID; }
         bool is_compiled() const { return m_is_compiled; }
         void use() const;
 
