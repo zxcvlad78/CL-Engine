@@ -18,11 +18,13 @@ struct Character {
 
 class Label {
 public:
-    Label(const std::string& text, 
+    Label();
+    Label(const std::string& text,
+          std::string font_path,
           const glm::vec2& position, 
-          float scale = 1.0f,
-          const glm::vec3& color = glm::vec3(1.0f));
-
+          float scale,
+          const glm::vec3& color
+    );
           
     ~Label();
 
@@ -35,10 +37,12 @@ public:
     glm::vec2 get_position() const { return m_position; }
 
     void render(GLuint shader_program);
-    static bool init_font(const std::string& font_path, unsigned int font_size = 48);
+    static bool load_font(const std::string& font_path, unsigned int font_size = 16);
+    std::string get_font_path() const { return m_font_path; }
     
 private:
     std::string m_text;
+    std::string m_font_path;
     glm::vec2 m_position;
     float m_scale;
     glm::vec3 m_color;

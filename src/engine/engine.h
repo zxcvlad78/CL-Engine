@@ -21,7 +21,11 @@ public:
     float get_delta_time() const;
     float get_fps() const;
     
-    void set_target_fps(int fps);
+    void set_target_fps(float fps);
+    float get_target_fps() const { return 1 / target_frame_time; }
+
+    int get_frame_count() const { return frame_count; }
+    //auto get_start_time() const { return start_time; }
     
 private:
     float delta_time;

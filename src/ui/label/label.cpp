@@ -7,15 +7,22 @@
 #include <vector>
 #include <map>
 
+#include "resources/resource_manager.h"
+
 using namespace std;
 
 map<GLchar, Character> Label::characters;
 bool Label::is_initialized = false;
 
-Label::Label(const std::string& text, const glm::vec2& position, float scale, const glm::vec3& color)
+
+Label::Label(const std::string& text = "",
+    std::string font_path = "/res/fonts/Allods.ttf",
+    const glm::vec2& position = glm::vec2(0.0f, 0.0f),
+    float scale = 1.0f,
+    const glm::vec3& color = glm::vec3(1.0f)
+    )
     : m_text(text), m_position(position), m_scale(scale), m_color(color)
 {
-    // Инициализация буферов
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
     
@@ -28,22 +35,28 @@ Label::Label(const std::string& text, const glm::vec2& position, float scale, co
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    ResourceManager resource_manager;
+    m_font_path = resource_manager.get_absolute_path(font_path);
+    load_font(m_font_path);
 }
+
 
 Label::~Label()
 {
     glDeleteVertexArrays(1, &m_VAO);
     glDeleteBuffers(1, &m_VBO);
 }
-    
-bool Label::init_font(const std::string& font_path, unsigned int font_size)
+
+
+bool Label::load_font(const std::string& font_path, unsigned int font_size)
 {
-    if (is_initialized) return true;
     
     FT_Library ft;
     if (FT_Init_FreeType(&ft))
     {
         std::cerr << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        is_initialized = false;
         return false;
     }
     
@@ -52,6 +65,7 @@ bool Label::init_font(const std::string& font_path, unsigned int font_size)
     {
         std::cerr << "ERROR::FREETYPE: Failed to load font" << std::endl;
         FT_Done_FreeType(ft);
+        is_initialized = false;
         return false;
     }
     

@@ -55,19 +55,21 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 
 int main(int argc, char** argv)
 {
+    
     Engine engine;
-    engine.set_target_fps(144);
+    engine.set_target_fps(144.0f); // fps ~45
+    
     
     if (!glfwInit())
     {
         std::cout << "glfwInit failed" << std::endl;
         return -1;
     }
-
+    
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+    
     GLFWwindow* window;
     window = glfwCreateWindow(window_width, window_height, NAME, nullptr, nullptr);
     if (!window)
@@ -76,17 +78,19 @@ int main(int argc, char** argv)
         glfwTerminate();
         return -1;
     }
-
+    
     glfwSetWindowSizeCallback(window, glfwWindowSizeCallback);
     glfwSetKeyCallback(window, glfwKeyCallback);
     
     glfwMakeContextCurrent(window);
-
+    
+    glfwSwapInterval(0);
+    
     if (!gladLoadGL()) {
         std::cout << "gladLoadGL failed" << std::endl;
         return -1;
     }
-
+    
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl; 
 
@@ -94,7 +98,7 @@ int main(int argc, char** argv)
 
     {
         // SHADERS
-        ResourceManager resource_manager(argv[0]);
+        ResourceManager resource_manager;
 
         auto p_default_shader_program = resource_manager.load_shaders(
             "DefaultShader",
@@ -117,16 +121,15 @@ int main(int argc, char** argv)
         
         // Font
 
-        std::string font_path = resource_manager.get_absolute_path("/res/fonts/Allods.ttf");
 
-        Label fps_label("FPS: ", glm::vec2(10.0f, 570.0f), 0.5f, glm::vec3(0.0f, 1.0f, 0.0f));
-        fps_label.init_font(font_path);
+        Label fps_label("FPS: ", "/res/fonts/default.otf", glm::vec2(8.0f, window_height - 26.0f), 1.0, glm::vec3(1.0f) );
+        fps_label.load_font(resource_manager.get_absolute_path("/res/fonts/default.otf"), 26.0f);
 
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window_width), 
                                           0.0f, static_cast<float>(window_height));
         
-        GLuint text_shader_id = p_text_shader_program->get_id();
         
+        GLuint text_shader_id = p_text_shader_program->get_id();
         if (text_shader_id)
         {
             p_text_shader_program->use();
@@ -164,8 +167,7 @@ int main(int argc, char** argv)
         {
             engine.process();
 
-            std::string fps_text = "FPS: " + std::to_string(static_cast<int>(engine.get_fps()));
-            fps_label.set_text(fps_text);
+            fps_label.set_text("FPS: " + std::to_string(static_cast<int>(engine.get_fps())));
             
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -175,6 +177,7 @@ int main(int argc, char** argv)
                 GLint projLoc = glGetUniformLocation(text_shader_id, "projection");
                 glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
                 fps_label.render(text_shader_id);
+
             }
             
             p_default_shader_program->use();

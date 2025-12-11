@@ -14,6 +14,7 @@ namespace Renderer
 class ResourceManager
 {
 public:
+	ResourceManager();
 	ResourceManager(const std::string& executable_path);
 	~ResourceManager() = default;
 
@@ -29,6 +30,7 @@ public:
     std::string get_absolute_path(const std::string& relative_path) const {
         return m_path + relative_path;
     }
+	std::string get_executable_path();
 
 private:
 

@@ -8,10 +8,52 @@
 #include "iostream"
 #include <filesystem>
 
+#ifdef _WIN32
+    #include <windows.h>
+#elif defined(__linux__)
+    #include <unistd.h>
+    #include <limits.h>
+#elif defined(__APPLE__)
+    #include <mach-o/dyld.h>
+#endif
+
 ResourceManager::ResourceManager(const std::string& executable_path)
 {
 	size_t found = executable_path.find_last_of("/\\");
 	m_path = executable_path.substr(0, found);
+}
+
+ResourceManager::ResourceManager()
+{
+	size_t found = get_executable_path().find_last_of("/\\");
+	m_path = get_executable_path().substr(0, found);
+}
+
+std::string ResourceManager::get_executable_path()
+{
+	std::string path;
+
+	#ifdef _WIN32
+        char buffer[MAX_PATH];
+        GetModuleFileNameA(NULL, buffer, MAX_PATH);
+        path = buffer;
+        
+    #elif defined(__linux__)
+        char buffer[PATH_MAX];
+        ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer)-1);
+        if (len != -1) {
+            buffer[len] = '\0';
+            path = buffer;
+        }
+        
+    #elif defined(__APPLE__)
+        char buffer[PATH_MAX];
+        uint32_t size = sizeof(buffer);
+        if (_NSGetExecutablePath(buffer, &size) == 0) {
+            path = buffer;
+        }
+    #endif
+    return path;
 }
 
 std::string ResourceManager::get_file_text(const std::string& relative_file_path) const
@@ -57,9 +99,6 @@ std::shared_ptr<Renderer::ShaderProgram> ResourceManager::load_shaders(const std
 	}
 
 	return new_shader;
-
-
-
 }
 
 std::shared_ptr<Renderer::ShaderProgram> ResourceManager::get_shader_program(const std::string& shader_name)
