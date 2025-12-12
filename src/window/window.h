@@ -1,5 +1,3 @@
-//window.h
-
 #ifndef WINDOW_H
 #define WINDOW_H
 
@@ -10,7 +8,7 @@
 #include <functional>
 #include <memory>
 #include <utility>
-
+#include <mutex>
 
 class Window {
 public:
@@ -68,14 +66,29 @@ public:
     void set_vsync(bool enabled);
     void set_fullscreen(bool fullscreen);
 
+    static Window* get_current_window();
+    static void set_current_window(Window* window);
+    static Window* get_window_by_id(GLFWwindow* glfw_window);
+    
+    static void poll_all_events();
+    static void wait_events();
+    static void wait_events_timeout(double timeout);
+    
+    static int get_monitor_count();
+    static glm::ivec2 get_primary_monitor_size();
+    static glm::ivec2 get_monitor_size(int monitor_index = 0);
+
 private:
     void setup_callbacks();
     void update_viewport();
+    void register_window();
+    void unregister_window();
 
     static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void glfw_window_size_callback(GLFWwindow* window, int width, int height);
     static void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
     static void glfw_cursor_pos_callback(GLFWwindow* window, double xpos, double ypos);
+    static void glfw_window_focus_callback(GLFWwindow* window, int focused);
 
     GLFWwindow* m_window = nullptr;
     Config m_config;
@@ -88,6 +101,16 @@ private:
     SizeCallback m_size_callback;
     MouseButtonCallback m_mouse_button_callback;
     CursorPosCallback m_cursor_pos_callback;
+
+    static Window* s_current_window;
+    static std::mutex s_windows_mutex;
+    
+    struct WindowInfo {
+        GLFWwindow* glfw_window;
+        Window* window_instance;
+    };
+    
+    static std::vector<WindowInfo> s_windows;
 };
 
 #endif // WINDOW_H

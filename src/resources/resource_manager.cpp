@@ -7,6 +7,7 @@
 #include "fstream"
 #include "iostream"
 #include <filesystem>
+#include <algorithm>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -25,41 +26,63 @@ ResourceManager::ResourceManager(const std::string& executable_path)
 
 ResourceManager::ResourceManager()
 {
-	size_t found = get_executable_path().find_last_of("/\\");
-	m_path = get_executable_path().substr(0, found);
+	m_path = get_executable_path();
 }
 
 std::string ResourceManager::get_executable_path()
 {
-	std::string path;
+    std::string path;
 
-	#ifdef _WIN32
-        char buffer[MAX_PATH];
-        GetModuleFileNameA(NULL, buffer, MAX_PATH);
+#ifdef _WIN32
+    char buffer[MAX_PATH];
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    path = buffer;
+    
+#elif defined(__linux__)
+    char buffer[PATH_MAX];
+    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer)-1);
+    if (len != -1) {
+        buffer[len] = '\0';
         path = buffer;
-        
-    #elif defined(__linux__)
-        char buffer[PATH_MAX];
-        ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer)-1);
-        if (len != -1) {
-            buffer[len] = '\0';
-            path = buffer;
-        }
-        
-    #elif defined(__APPLE__)
-        char buffer[PATH_MAX];
-        uint32_t size = sizeof(buffer);
-        if (_NSGetExecutablePath(buffer, &size) == 0) {
-            path = buffer;
-        }
-    #endif
+    }
+    
+#elif defined(__APPLE__)
+    char buffer[PATH_MAX];
+    uint32_t size = sizeof(buffer);
+    if (_NSGetExecutablePath(buffer, &size) == 0) {
+        path = buffer;
+    }
+#endif
+
+    std::filesystem::path exe_path(path);
+    path = exe_path.parent_path().string();
+    
+    std::replace(path.begin(), path.end(), '\\', '/');
+    
     return path;
+}
+
+std::string ResourceManager::get_absolute_path(const std::string& relative_file_path)
+{
+    std::string normalized_relative = relative_file_path;
+    std::replace(normalized_relative.begin(), normalized_relative.end(), '\\', '/');
+    
+    // Создаем полный путь
+    std::filesystem::path full_path = std::filesystem::path( get_executable_path() ) / normalized_relative;
+    std::string result = full_path.string();
+    
+    
+    std::replace(result.begin(), result.end(), '\\', '/');
+    
+    return result;
 }
 
 std::string ResourceManager::get_file_text(const std::string& relative_file_path) const
 {
+	std::filesystem::path full_path = std::filesystem::path(m_path) / relative_file_path;
+
 	std::ifstream f;
-	f.open(m_path + relative_file_path.c_str(), std::ios::in | std::ios::binary );
+	f.open(full_path, std::ios::in | std::ios::binary );
 
 	if (!f.is_open())
 	{

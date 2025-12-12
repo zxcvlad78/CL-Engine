@@ -1,26 +1,24 @@
-//window.cpp
-
 #include "window.h"
 #include <iostream>
+#include <utility>
+#include <algorithm>
+
+Window* Window::s_current_window = nullptr;
+std::mutex Window::s_windows_mutex;
+std::vector<Window::WindowInfo> Window::s_windows;
 
 Window::Window() {
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
-        return;
-    }
 }
 
 Window::Window(const Config& config) : m_config(config) {
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
-        return;
-    }
     create(config);
 }
 
 Window::~Window() {
     destroy();
-    glfwTerminate();
+    if (m_glad_loaded && s_windows.empty()) {
+        glfwTerminate();
+    }
 }
 
 Window::Window(Window&& other) noexcept 
@@ -34,8 +32,19 @@ Window::Window(Window&& other) noexcept
     , m_size_callback(std::move(other.m_size_callback))
     , m_mouse_button_callback(std::move(other.m_mouse_button_callback))
     , m_cursor_pos_callback(std::move(other.m_cursor_pos_callback)) {
+    
     other.m_initialized = false;
     other.m_glad_loaded = false;
+    
+    if (m_window) {
+        std::lock_guard<std::mutex> lock(s_windows_mutex);
+        for (auto& info : s_windows) {
+            if (info.glfw_window == m_window) {
+                info.window_instance = this;
+                break;
+            }
+        }
+    }
 }
 
 Window& Window::operator=(Window&& other) noexcept {
@@ -55,22 +64,69 @@ Window& Window::operator=(Window&& other) noexcept {
         
         other.m_initialized = false;
         other.m_glad_loaded = false;
+        
+        if (m_window) {
+            std::lock_guard<std::mutex> lock(s_windows_mutex);
+            for (auto& info : s_windows) {
+                if (info.glfw_window == m_window) {
+                    info.window_instance = this;
+                    break;
+                }
+            }
+        }
     }
     return *this;
 }
 
+void Window::register_window() {
+    std::lock_guard<std::mutex> lock(s_windows_mutex);
+    
+    s_windows.erase(std::remove_if(s_windows.begin(), s_windows.end(),
+        [this](const WindowInfo& info) {
+            return info.glfw_window == m_window;
+        }), s_windows.end());
+    
+    s_windows.push_back({m_window, this});
+    
+    if (s_windows.size() == 1) {
+        s_current_window = this;
+    }
+}
+
+void Window::unregister_window() {
+    std::lock_guard<std::mutex> lock(s_windows_mutex);
+    
+    s_windows.erase(std::remove_if(s_windows.begin(), s_windows.end(),
+        [this](const WindowInfo& info) {
+            return info.glfw_window == m_window;
+        }), s_windows.end());
+    
+    if (s_current_window == this) {
+        if (!s_windows.empty()) {
+            s_current_window = s_windows.front().window_instance;
+        } else {
+            s_current_window = nullptr;
+        }
+    }
+}
+
 bool Window::initialize() {
-    if (m_initialized) return true;
+    if (m_glad_loaded) return true;
 
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
         return false;
     }
 
+    m_glad_loaded = true;
     return true;
 }
 
 bool Window::create(const Config& config) {
+    if (!initialize()) {
+        return false;
+    }
+
     m_config = config;
     m_width = config.width;
     m_height = config.height;
@@ -89,14 +145,14 @@ bool Window::create(const Config& config) {
         return false;
     }
 
+    register_window();
+
     glfwMakeContextCurrent(m_window);
     
-    if (!m_glad_loaded) {
-        if (!gladLoadGL()) {
-            std::cerr << "Failed to initialize GLAD" << std::endl;
-            return false;
-        }
-        m_glad_loaded = true;
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD" << std::endl;
+        unregister_window();
+        return false;
     }
 
     glfwSwapInterval(config.vsync ? 1 : 0);
@@ -104,7 +160,7 @@ bool Window::create(const Config& config) {
     update_viewport();
 
     setup_callbacks();
-L
+
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GPU: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
@@ -115,10 +171,84 @@ L
 
 void Window::destroy() {
     if (m_window) {
+        unregister_window();
         glfwDestroyWindow(m_window);
         m_window = nullptr;
     }
     m_initialized = false;
+}
+
+Window* Window::get_current_window() {
+    std::lock_guard<std::mutex> lock(s_windows_mutex);
+    
+    GLFWwindow* current_glfw_window = glfwGetCurrentContext();
+    if (current_glfw_window) {
+        for (const auto& info : s_windows) {
+            if (info.glfw_window == current_glfw_window) {
+                return info.window_instance;
+            }
+        }
+    }
+    
+    return s_current_window;
+}
+
+void Window::set_current_window(Window* window) {
+    std::lock_guard<std::mutex> lock(s_windows_mutex);
+    
+    if (window && window->m_window) {
+        s_current_window = window;
+        glfwMakeContextCurrent(window->m_window);
+    }
+}
+
+Window* Window::get_window_by_id(GLFWwindow* glfw_window) {
+    std::lock_guard<std::mutex> lock(s_windows_mutex);
+    
+    for (const auto& info : s_windows) {
+        if (info.glfw_window == glfw_window) {
+            return info.window_instance;
+        }
+    }
+    return nullptr;
+}
+
+void Window::poll_all_events() {
+    glfwPollEvents();
+}
+
+void Window::wait_events() {
+    glfwWaitEvents();
+}
+
+void Window::wait_events_timeout(double timeout) {
+    glfwWaitEventsTimeout(timeout);
+}
+
+int Window::get_monitor_count() {
+    int count = 0;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+    return count;
+}
+
+glm::ivec2 Window::get_primary_monitor_size() {
+    GLFWmonitor* primary = glfwGetPrimaryMonitor();
+    if (!primary) return glm::ivec2(0, 0);
+    
+    const GLFWvidmode* mode = glfwGetVideoMode(primary);
+    return glm::ivec2(mode->width, mode->height);
+}
+
+glm::ivec2 Window::get_monitor_size(int monitor_index) {
+    int count = 0;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+    
+    if (monitor_index >= 0 && monitor_index < count) {
+        const GLFWvidmode* mode = glfwGetVideoMode(monitors[monitor_index]);
+        return glm::ivec2(mode->width, mode->height);
+    }
+    
+    return glm::ivec2(0, 0);
 }
 
 bool Window::should_close() const {
@@ -142,7 +272,7 @@ void Window::clear(const glm::vec4& color) {
 
 void Window::set_should_close(bool value) {
     if (m_window) {
-        glfwSetWindowShouldClose(m_window, value);
+        glfwSetWindowShouldClose(m_window, value ? GLFW_TRUE : GLFW_FALSE);
     }
 }
 
@@ -209,6 +339,7 @@ void Window::setup_callbacks() {
     glfwSetWindowSizeCallback(m_window, glfw_window_size_callback);
     glfwSetMouseButtonCallback(m_window, glfw_mouse_button_callback);
     glfwSetCursorPosCallback(m_window, glfw_cursor_pos_callback);
+    glfwSetWindowFocusCallback(m_window, glfw_window_focus_callback);
 }
 
 void Window::update_viewport() {
@@ -245,5 +376,13 @@ void Window::glfw_cursor_pos_callback(GLFWwindow* window, double xpos, double yp
     Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
     if (win && win->m_cursor_pos_callback) {
         win->m_cursor_pos_callback(xpos, ypos);
+    }
+}
+
+void Window::glfw_window_focus_callback(GLFWwindow* window, int focused) {
+    Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    if (win && focused) {
+        std::lock_guard<std::mutex> lock(s_windows_mutex);
+        s_current_window = win;
     }
 }

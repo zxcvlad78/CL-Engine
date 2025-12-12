@@ -6,17 +6,58 @@ project(${PROJECT_NAME})
 
 
 add_executable(${PROJECT_NAME} 
-    src/main.cpp
-	src/engine/engine.cpp
-	src/engine/engine.h
-    src/renderer/shader_program.cpp
-    src/renderer/shader_program.h
-    src/resources/resource_manager.cpp
-    src/resources/resource_manager.h
-	src/ui/label/label.cpp
-	src/ui/label/label.h
+    src/main.cpp #
+	src/engine/engine.cpp #
+	src/engine/engine.h #
+    src/engine/main_loop.cpp #
+    src/engine/main_loop.h #
+
+    src/scene/scene_tree.cpp #
+    src/scene/scene_tree.h #
+
+    src/viewport/viewport.cpp
+    src/viewport/viewport.h
+
     src/window/window.cpp
     src/window/window.h
+
+    src/renderer/shader_program.cpp #
+    src/renderer/shader_program.h #
+    src/renderer/shader/shader.cpp #
+    src/renderer/shader/shader.h #
+    src/renderer/material/material.cpp #
+    src/renderer/material/material.h #
+    src/renderer/texture/texture.cpp #
+    src/renderer/texture/texture.h #
+
+    src/resources/resource_manager.cpp #
+    src/resources/resource_manager.h #
+
+    src/object/object.cpp #
+    src/object/object.h #
+
+    src/node/node.cpp #
+    src/node/node.h #
+ 
+    src/canvas_layer/canvas_layer.cpp #
+    src/canvas_layer/canvas_layer.h #
+
+	src/canvas_item/canvas_item.cpp #
+    src/canvas_item/canvas_item.h #
+    src/node2d/node2d.cpp #
+    src/node2d/node2d.h #
+    
+    src/control/control.cpp #
+    src/control/control.h #
+    src/control/button/button.cpp # 
+    src/control/button/button.h #
+    src/control/label/label.cpp #
+    src/control/label/label.h # 
+    src/control/texture_rect/texture_rect.cpp #
+    src/control/texture_rect/texture_rect.h #
+
+
+
     )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -42,6 +83,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/external/glad/include
     ${CMAKE_SOURCE_DIR}/external/freetype/include
     ${CMAKE_SOURCE_DIR}/external/glm
+    ${CMAKE_SOURCE_DIR}/external/stb
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)

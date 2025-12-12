@@ -27,10 +27,8 @@ public:
 	std::shared_ptr<Renderer::ShaderProgram> load_shaders(const std::string& shader_name, const std::string& vertex_path, const std::string& fragment_path);
 	std::shared_ptr<Renderer::ShaderProgram> get_shader_program(const std::string& shader_name);
 
-    std::string get_absolute_path(const std::string& relative_path) const {
-        return m_path + relative_path;
-    }
-	std::string get_executable_path();
+    static std::string get_absolute_path(const std::string& relative_path);
+	static std::string get_executable_path();
 
 private:
 

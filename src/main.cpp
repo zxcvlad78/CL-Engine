@@ -1,156 +1,134 @@
-//main.cpp
-
 #include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "renderer/shader_program.h"
-#include "resources/resource_manager.h"
-#include "engine/engine.h"
-#include "ui/label/label.h"
+#include <memory>
 #include "window/window.h"
+#include "scene/scene_tree.h"
+#include "viewport/viewport.h"
+#include "canvas_layer/canvas_layer.h"
+#include "control/label/label.h"
+#include "control/texture_rect/texture_rect.h"
+#include "control/button/button.h"
+#include "engine/engine.h"
+#include "resources/resource_manager.h"
 
-GLfloat points[] = {
-    0.0f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    0.3f, 0.5f, 0.0f,
-    0.2f, -0.1f, 0.0f,
-    -0.6f, -0.9f, 0.0f
-};
-
-GLfloat colors[] = {
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 1.0f,
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 1.0f
-};
-
-
-int main(int argc, char** argv)
-{
+int main() {
+    std::cout << "Starting CL Engine..." << std::endl;
+    
+    // Инициализация движка
     Engine engine;
-    engine.set_target_fps(144.0f);
-    
-    Window::Config window_config;
-    window_config.title = "CL Engine";
-    window_config.width = 1280;
-    window_config.height = window_config.width / 16 * 9;
-    window_config.vsync = false;
-    
-    Window window;
-    
-    if (!window.initialize()) {
-        std::cout << "Failed to initialize window" << std::endl;
-        return -1;
-    }
-    
-    if (!window.create(window_config)) {
-        std::cout << "Failed to create window" << std::endl;
-        return -1;
-    }
-    
-    window.set_key_callback([&window](int key, int scancode, int action, int mods) {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-            window.set_should_close(true);
-        }
-    });
-    
-    glClearColor(0, 0, 0, 1);
+    engine.set_target_fps(60.0f);
     
     ResourceManager resource_manager;
+    // Создаем окно
+    Window::Config config;
+    config.title = "CL Engine";
+    config.width = 1280;
+    config.height = 720;
+    config.vsync = true;
     
-    auto p_default_shader_program = resource_manager.load_shaders(
-        "DefaultShader",
-        "/res/shaders/vertex.txt",
-        "/res/shaders/fragment.txt"
-    );
-    
-    auto p_text_shader_program = resource_manager.load_shaders(
-        "TextShader",
-        "/res/shaders/text/vertex.txt",
-        "/res/shaders/text/fragment.txt"
-    );
-    
-    if (!p_default_shader_program || !p_text_shader_program)
-    {
-        std::cerr << "Can't create shader programs" << std::endl;
+    Window window;
+    if (!window.create(config)) {
+        std::cerr << "Failed to create window" << std::endl;
         return -1;
     }
     
-    Label fps_label("FPS: ", "/res/fonts/default.otf", 
-                    glm::vec2(8.0f, window.get_height() - 26.0f), 
-                    1.0, 
-                    glm::vec3(1.0f));
+    std::cout << "Window created successfully" << std::endl;
     
-    fps_label.load_font(resource_manager.get_absolute_path("/res/fonts/default.otf"), 26.0f);
+    // Создаем SceneTree
+    auto scene_tree = std::make_shared<SceneTree>("MainSceneTree");
+    
+    // Создаем CanvasLayer
+    auto canvas_layer = std::make_shared<CanvasLayer>("MainCanvasLayer");
+    canvas_layer->set_layer(0);
+    
+    // Создаем Label для FPS
+    auto fps_label = std::make_shared<Label>("FPSLabel");
+    fps_label->set_text("FPS: 0");
+    
+    fps_label->set_font_size(24);
+    fps_label->set_position({250.0f, 250.0f});
+    fps_label->set_text_color({1.0f, 1.0f, 1.0f, 1.0f});
+    fps_label->set_size({200.0f, 30.0f});
+    fps_label->set_font( ResourceManager::get_absolute_path("res/fonts/default.otf"));
+    
+    // Создаем кнопку
+    auto button = std::make_shared<Button>("TestButton");
+    button->set_text("Click Me!");
+    button->set_position({100.0f, 100.0f});
+    button->set_size({200.0f, 50.0f});
+    button->connect_pressed([]() {
+        std::cout << "=== Button was pressed! ===" << std::endl;
+    });
+    
+    // Создаем TextureRect
+    auto texture_rect = std::make_shared<TextureRect>("TextureRect");
+    texture_rect->set_position({100.0f, 100.0f});
+    texture_rect->set_size({200.0f, 200.0f});
+    
+    auto texture = Texture::load(ResourceManager::get_absolute_path("res/textures/icon.png") ); //("Z:/dev/cpp/CL-Engine/res/textures/icon.png");
+    texture->set_filter_mag(GL_NEAREST);
+    texture->set_filter_min(GL_NEAREST);
     
 
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(window.get_width()), 
-                                      0.0f, static_cast<float>(window.get_height()));
+    texture_rect->set_texture(texture);
+
+    canvas_layer->add_item(fps_label.get()); 
+    canvas_layer->add_item(button.get());
+    canvas_layer->add_item(texture_rect.get());
     
-    GLuint text_shader_id = p_text_shader_program->get_id();
-    if (text_shader_id)
-    {
-        p_text_shader_program->use();
-        GLint projLoc = glGetUniformLocation(text_shader_id, "projection");
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    }
+    // Создаем Viewport
+    auto viewport = std::make_shared<Viewport>("MainViewport");
+    viewport->set_size({config.width, config.height});
+    viewport->set_background_color({0.2f, 0.2, 0.2f, 1.0f});
+    viewport->add_layer(canvas_layer.get());
     
-    GLuint points_vbo = 0;
-    glGenBuffers(1, &points_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+    // Добавляем viewport в SceneTree
+    scene_tree->add_viewport(viewport);
     
-    GLuint colors_vbo = 0;
-    glGenBuffers(1, &colors_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    // Устанавливаем текущую сцену
+    scene_tree->set_current_scene(canvas_layer);
     
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    // Вход в дерево
+    viewport->enter_tree();
+    viewport->ready();
     
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-    
-    while (!window.should_close())
-    {
+    while (!window.should_close()) {
+        // Обработка времени
         engine.process();
         
-        fps_label.set_text("FPS: " + std::to_string(static_cast<int>(engine.get_fps())));
+        // Обновляем FPS
+        static int frame_count = 0;
+        static float time_accumulator = 0.0f;
+        time_accumulator += engine.get_delta_time();
+        frame_count++;
         
-        window.clear();
-        
-        if (text_shader_id)
-        {
-            p_text_shader_program->use();
+        if (time_accumulator >= 1.0f) {
+            float fps = frame_count / time_accumulator;
+            fps_label->set_text("FPS: " + std::to_string(static_cast<int>(fps)));
+            frame_count = 0;
+            time_accumulator = 0.0f;
+            std::cout << "FPS: " + std::to_string(static_cast<int>(fps)) << std::endl;
             
-            GLint projLoc = glGetUniformLocation(text_shader_id, "projection");
-            glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-            
-            fps_label.render(text_shader_id);
         }
         
-        p_default_shader_program->use();
-        glBindVertexArray(vao);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        
-        window.swap_buffers();
+        // Обработка событий
         window.poll_events();
+        
+        // Очистка экрана
+        window.clear(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
+        
+        // Обработка сцены
+        scene_tree->process(engine.get_delta_time());
+        
+        // Рендеринг
+        scene_tree->render();
+        
+        // Обмен буферов
+        window.swap_buffers();
+    
     }
+    
+    std::cout << "Shutting down..." << std::endl;
     
     return 0;
 }

@@ -1,49 +1,56 @@
-//node.h
-
 #ifndef NODE_H
 #define NODE_H
 
 #include "object/object.h"
-#include <vector>
+#include <string>
 #include <memory>
+#include <vector>
+#include <functional>
 
 class Node : public Object {
 public:
     explicit Node(const std::string& name = "Node");
-    ~Node() override;
+    virtual ~Node();
     
-    Node(const Node&) = delete;
-    Node& operator=(const Node&) = delete;
+    // Имя узла
+    const std::string& get_name() const { return m_name; }
+    void set_name(const std::string& name) { m_name = name; }
     
-    Node(Node&&) = default;
-    Node& operator=(Node&&) = default;
-    
-    virtual void process(float delta);
-    virtual void physics_process(float delta);
-    
-    void free();
-    void queue_free();
+    // Иерархия
+    Node* get_parent() const { return m_parent; }
+    Node* get_child(int index) const;
+    int get_child_count() const { return static_cast<int>(m_children.size()); }
     
     void add_child(std::unique_ptr<Node> child);
     void remove_child(Node* child);
-    Node* get_child(int index) const;
-    
-    Node* get_parent() const { return m_parent; }
-    const std::vector<std::unique_ptr<Node>>& get_children() const { return m_children; }
     
     Node* find_node(const std::string& path) const;
+    Node* find_node(const std::function<bool(Node*)>& predicate) const;
     
+    // Жизненный цикл
     virtual void ready();
     virtual void enter_tree();
     virtual void exit_tree();
+    virtual void process(float delta);
+    virtual void physics_process(float delta);
+    
+    // Состояние
+    bool is_inside_tree() const { return m_inside_tree; }
+    virtual bool is_visible_in_tree() const { return true; }
+    
+    // Дерево сцены
+    virtual std::string get_scene_tree_info(int indent = 0) const;
+    void print_scene_tree() const;
     
 protected:
+    std::string m_name;
     Node* m_parent = nullptr;
     std::vector<std::unique_ptr<Node>> m_children;
+    bool m_inside_tree = false;
     
 private:
-    bool m_inside_tree = false;
-    bool m_ready_called = false;
+    Node(const Node&) = delete;
+    Node& operator=(const Node&) = delete;
 };
 
-#endif
+#endif // NODE_H
