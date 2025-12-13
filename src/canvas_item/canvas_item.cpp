@@ -238,3 +238,15 @@ void CanvasItem::exit_tree() {
 void CanvasItem::connect_draw(const DrawCallback& callback) {
     m_draw_callback = callback;
 }
+
+void CanvasItem::set_shader(const std::shared_ptr<Shader>& shader) {
+    if (m_shader != shader) {
+        m_shader = shader;
+        queue_redraw();
+    }
+}
+
+std::shared_ptr<Shader> CanvasItem::get_shader() const
+{
+    return m_shader;
+}

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <functional>
+#include "renderer/shader/shader.h"
 
 class CanvasItem : public Node {
 public:
@@ -36,7 +37,10 @@ public:
     // Прозрачность
     void set_opacity(float opacity);
     float get_opacity() const { return m_opacity; }
-    
+
+    void set_shader(const std::shared_ptr<Shader>& shader);
+    std::shared_ptr<Shader> get_shader() const;
+
     // Режимы смешивания
     enum BlendMode {
         BLEND_MIX,
@@ -122,6 +126,7 @@ protected:
     BlendMode m_blend_mode = BLEND_MIX;
     LightMode m_light_mode = LIGHT_MODE_NORMAL;
     std::shared_ptr<class Material> m_material;
+    std::shared_ptr<Shader> m_shader;
     
 private:
     void update_transform();

@@ -126,7 +126,6 @@ namespace {
         glBindVertexArray(0);
         
         shader_compiled = true;
-        std::cout << "Texture shader compiled successfully" << std::endl;
     }
 }
 

@@ -116,6 +116,7 @@ void MainLoop::render() {
         }
         last_frame_time = end_time; // Добавлено
     }
+    
 }
 
 bool MainLoop::should_quit() const {

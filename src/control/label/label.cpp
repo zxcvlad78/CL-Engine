@@ -21,6 +21,7 @@ Label::~Label() {
     glDeleteBuffers(1, &m_VBO);
 }
 
+
 void Label::set_text(const std::string& text) {
     if (m_text != text) {
         m_text = text;
@@ -29,11 +30,11 @@ void Label::set_text(const std::string& text) {
 }
 
 void Label::set_font(const std::string& font_path) {
-    //if (m_font_path != font_path) {
-    m_font_path = font_path;
-    load_font();
-    queue_redraw();
-    //}
+    if (m_font_path != font_path) {
+        m_font_path = font_path;
+        load_font();
+        queue_redraw();
+    }
 }
 
 void Label::set_font_size(int size) {
@@ -131,16 +132,14 @@ void Label::setup_buffers() {
 }
 
 bool Label::load_font() {
-    /*if (m_font_path.empty() || m_font_size <= 0) {
+    if (m_font_path.empty() || m_font_size <= 0) {
         return false;
-    }*/
+    }
     
-    // Если шрифт уже загружен с такими же параметрами, используем кэш
     if (m_font_path == loaded_font_path && m_font_size == loaded_font_size) {
         return true;
     }
-    
-    ResourceManager resource_manager;
+    std::cout << "Label::load_font: " << m_font_path << std::endl;
     
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {
@@ -150,7 +149,7 @@ bool Label::load_font() {
     
     FT_Face face;
     if (FT_New_Face(ft, m_font_path.c_str(), 0, &face)) {
-        std::cerr << "ERROR::FREETYPE: Failed to load font: " << m_font_path << std::endl;
+        std::cerr << "ERROR::FREETYPE: Failed to load font: " + m_font_path << std::endl;
         FT_Done_FreeType(ft);
         return false;
     }
@@ -219,9 +218,16 @@ void Label::render_text() {
         return;
     }
     
-    // Устанавливаем смешивание для прозрачности текста
+    auto shader = get_shader();
+    if (!shader || shader->get_id() == 0) {
+        std::cerr << "ERROR: Shader not available or not initialized!" << std::endl;
+        return;
+    }
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    shader->use();
     
     // Рассчитываем начальную позицию в зависимости от выравнивания
     glm::vec2 text_size = calculate_text_size();

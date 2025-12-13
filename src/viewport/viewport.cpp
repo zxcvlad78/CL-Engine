@@ -4,41 +4,39 @@
 #include <algorithm>
 #include <glad/glad.h>
 
-Viewport::Viewport() : m_name("Viewport") {
-    std::cout << "Viewport created: " << m_name << std::endl;
+Viewport::Viewport() : m_name("Viewport")
+{
 }
 
-Viewport::Viewport(const std::string& name) : m_name(name) {
-    std::cout << "Viewport created: " << m_name << std::endl;
+Viewport::Viewport(const std::string& name) : m_name(name)
+{
 }
 
-Viewport::~Viewport() {
-    std::cout << "Viewport destroyed: " << m_name << std::endl;
+Viewport::~Viewport()
+{
     m_layers.clear();
 }
 
-void Viewport::set_size(const glm::ivec2& size) {
-    if (m_size != size && size.x > 0 && size.y > 0) {
+void Viewport::set_size(const glm::ivec2& size)
+{
+    if (m_size != size && size.x > 0 && size.y > 0)
+    {
         m_size = size;
-        std::cout << "Viewport size set to: " << size.x << "x" << size.y << std::endl;
     }
 }
 
 void Viewport::add_layer(CanvasLayer* layer) {
     if (!layer) {
-        std::cerr << "Cannot add null layer to viewport" << std::endl;
         return;
     }
     
     // Проверяем, нет ли уже этого слоя
     auto it = std::find(m_layers.begin(), m_layers.end(), layer);
     if (it != m_layers.end()) {
-        std::cerr << "Layer already exists in viewport: " << layer->get_name() << std::endl;
         return;
     }
     
     m_layers.push_back(layer);
-    std::cout << "Layer added to viewport: " << layer->get_name() << std::endl;
     
     // Если viewport уже в дереве, вызываем enter_tree для слоя
     if (m_in_tree) {
@@ -58,7 +56,7 @@ void Viewport::remove_layer(CanvasLayer* layer) {
         }
         
         m_layers.erase(it);
-        std::cout << "Layer removed from viewport: " << layer->get_name() << std::endl;
+        //std::cout << "Layer removed from viewport: " << layer->get_name() << std::endl;
     }
 }
 
@@ -71,7 +69,7 @@ void Viewport::clear_layers() {
     }
     
     m_layers.clear();
-    std::cout << "All layers cleared from viewport" << std::endl;
+    //std::cout << "All layers cleared from viewport" << std::endl;
 }
 
 void Viewport::render() {
@@ -133,7 +131,7 @@ void Viewport::enter_tree() {
     }
     
     m_in_tree = true;
-    std::cout << "Viewport entered tree: " << m_name << std::endl;
+    //std::cout << "Viewport entered tree: " << m_name << std::endl;
     
     // Вызываем enter_tree для всех слоев
     for (auto layer : m_layers) {
@@ -149,7 +147,7 @@ void Viewport::exit_tree() {
     }
     
     m_in_tree = false;
-    std::cout << "Viewport exited tree: " << m_name << std::endl;
+    //std::cout << "Viewport exited tree: " << m_name << std::endl;
     
     // Вызываем exit_tree для всех слоев
     for (auto layer : m_layers) {
@@ -160,7 +158,7 @@ void Viewport::exit_tree() {
 }
 
 void Viewport::ready() {
-    std::cout << "Viewport ready: " << m_name << std::endl;
+    //std::cout << "Viewport ready: " << m_name << std::endl;
     
     // Вызываем ready для всех слоев
     for (auto layer : m_layers) {

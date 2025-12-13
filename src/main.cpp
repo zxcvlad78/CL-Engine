@@ -33,49 +33,45 @@ int main() {
     
     std::cout << "Window created successfully" << std::endl;
     
-    // Создаем SceneTree
+    // SceneTree
     auto scene_tree = std::make_shared<SceneTree>("MainSceneTree");
     
-    // Создаем CanvasLayer
+    // CanvasLayer
     auto canvas_layer = std::make_shared<CanvasLayer>("MainCanvasLayer");
     canvas_layer->set_layer(0);
     
-    // Создаем Label для FPS
+    // Label Shader
+    auto label_shader = std::make_shared<Shader>();
+    label_shader->load_from_files(ResourceManager::get_absolute_path("res/shaders/text/vertex.txt"),
+        ResourceManager::get_absolute_path("res/shaders/text/fragment.txt"));
+
+    // FPS Label
     auto fps_label = std::make_shared<Label>("FPSLabel");
-    fps_label->set_text("FPS: 0");
-    
+    fps_label->set_shader(label_shader);
+
+    fps_label->set_font( ResourceManager::get_absolute_path("res/fonts/default.otf"));
     fps_label->set_font_size(24);
     fps_label->set_position({250.0f, 250.0f});
     fps_label->set_text_color({1.0f, 1.0f, 1.0f, 1.0f});
     fps_label->set_size({200.0f, 30.0f});
-    fps_label->set_font( ResourceManager::get_absolute_path("res/fonts/default.otf"));
+    fps_label->set_text("FPS: 0");
     
-    // Создаем кнопку
-    auto button = std::make_shared<Button>("TestButton");
-    button->set_text("Click Me!");
-    button->set_position({100.0f, 100.0f});
-    button->set_size({200.0f, 50.0f});
-    button->connect_pressed([]() {
-        std::cout << "=== Button was pressed! ===" << std::endl;
-    });
     
-    // Создаем TextureRect
-    auto texture_rect = std::make_shared<TextureRect>("TextureRect");
-    texture_rect->set_position({100.0f, 100.0f});
-    texture_rect->set_size({200.0f, 200.0f});
-    
-    auto texture = Texture::load(ResourceManager::get_absolute_path("res/textures/icon.png") ); //("Z:/dev/cpp/CL-Engine/res/textures/icon.png");
+    // Texture
+    auto texture = Texture::load(ResourceManager::get_absolute_path("res/textures/icon.png"));
     texture->set_filter_mag(GL_NEAREST);
     texture->set_filter_min(GL_NEAREST);
-    
-
+    // TextureRect
+    auto texture_rect = std::make_shared<TextureRect>("TextureRect");
+    texture_rect->set_position({900.0f, 100.0f});
+    texture_rect->set_size({200.0f, 200.0f});
     texture_rect->set_texture(texture);
-
+    
+    // Add items
     canvas_layer->add_item(fps_label.get()); 
-    canvas_layer->add_item(button.get());
     canvas_layer->add_item(texture_rect.get());
     
-    // Создаем Viewport
+    // Viewport
     auto viewport = std::make_shared<Viewport>("MainViewport");
     viewport->set_size({config.width, config.height});
     viewport->set_background_color({0.2f, 0.2, 0.2f, 1.0f});
@@ -90,8 +86,15 @@ int main() {
     // Вход в дерево
     viewport->enter_tree();
     viewport->ready();
-    
-    
+
+    std::cout
+        << "Shader: " << fps_label->get_shader()
+        << "\n"
+        << "Font: " << fps_label->get_font()
+        << "\n"
+        << "Text: " << fps_label->get_text()
+        << std::endl;
+
     while (!window.should_close()) {
         // Обработка времени
         engine.process();
@@ -104,10 +107,10 @@ int main() {
         
         if (time_accumulator >= 1.0f) {
             float fps = frame_count / time_accumulator;
-            fps_label->set_text("FPS: " + std::to_string(static_cast<int>(fps)));
+            //fps_label->set_text("FPS: " + std::to_string(static_cast<int>(fps)));
+            fps_label->set_text("CL Engine Hello!");
             frame_count = 0;
             time_accumulator = 0.0f;
-            std::cout << "FPS: " + std::to_string(static_cast<int>(fps)) << std::endl;
             
         }
         
