@@ -63,7 +63,6 @@ void Button::_gui_input(const InputEvent& event) {
         return;
     }
     
-    // Используем константы из InputEvent
     if (event.type == InputEvent::MOUSE_BUTTON && 
         event.action == 1 && // PRESS
         event.button == 0) { // LEFT
@@ -104,7 +103,6 @@ void Button::_mouse_exit() {
 }
 
 void Button::update_state() {
-    // Обновление состояния кнопки
 }
 
 void Button::emit_pressed() {

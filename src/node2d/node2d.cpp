@@ -17,7 +17,7 @@ float Node2D::get_rotation_degrees() const {
 }
 
 void Node2D::set_global_position(const glm::vec2& position) {
-    // Для простоты - в реальности нужно учитывать родительские трансформации
+    // еще нужно учитывать родительские трансформации
     set_position(position);
 }
 
@@ -27,16 +27,14 @@ glm::vec2 Node2D::get_global_position() const {
 }
 
 void Node2D::set_global_rotation(float rotation) {
-    // Для простоты
     set_rotation(rotation);
 }
 
 float Node2D::get_global_rotation() const {
-    return get_rotation(); // В реальности нужно извлекать из глобальной матрицы
+    return get_rotation(); // еще нужно извлекать из глобальной матрицы
 }
 
 void Node2D::set_global_scale(const glm::vec2& scale) {
-    // Для простоты
     set_scale(scale);
 }
 
@@ -48,8 +46,8 @@ glm::vec2 Node2D::get_global_scale() const {
     );
 }
 
-void Node2D::update_transform_matrix() {
-    // Реализовано в CanvasItem
+void Node2D::update_transform_matrix()
+{
 }
 
 glm::vec2 Node2D::to_local(const glm::vec2& global_point) const {
@@ -85,8 +83,6 @@ glm::vec2 Node2D::get_forward() const {
 
 void Node2D::_draw() {
     CanvasItem::_draw();
-    // Node2D по умолчанию ничего не рисует
-    // Производные классы (Sprite, TileMap и т.д.) переопределят этот метод
 }
 
 void Node2D::_process(float delta) {

@@ -11,11 +11,9 @@ public:
     explicit TextureRect(const std::string& name = "TextureRect");
     ~TextureRect() override = default;
     
-    // Текстура
     void set_texture(const std::shared_ptr<Texture>& texture);
     std::shared_ptr<Texture> get_texture() const { return m_texture; }
     
-    // Растяжение текстуры
     enum StretchMode {
         STRETCH_SCALE,
         STRETCH_TILE,
@@ -37,15 +35,12 @@ public:
     void set_expand(bool expand);
     bool is_expanding() const { return m_expand; }
     
-    // Режим отсечения
     void set_clip_contents(bool clip);
     bool is_clipping_contents() const { return m_clip_contents; }
     
-    // Цветовая модуляция
     void set_modulate(const glm::vec4& color);
     glm::vec4 get_modulate() const { return m_modulate; }
     
-    // Control методы
     void _draw() override;
     void _notification(int what) override;
     

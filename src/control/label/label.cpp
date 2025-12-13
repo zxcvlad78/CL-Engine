@@ -5,6 +5,7 @@
 #include FT_FREETYPE_H
 #include <iostream>
 #include <sstream>
+#include <glm/gtc/matrix_transform.hpp>
 
 std::map<char, Label::Character> Label::characters;
 std::string Label::loaded_font_path;
@@ -156,13 +157,11 @@ bool Label::load_font() {
     
     FT_Set_Pixel_Sizes(face, 0, m_font_size);
     
-    // Очищаем старые символы
     for (auto& pair : characters) {
         glDeleteTextures(1, &pair.second.texture_id);
     }
     characters.clear();
     
-    // Загружаем первые 128 символов ASCII
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     
     for (unsigned char c = 0; c < 128; c++) {
@@ -218,50 +217,61 @@ void Label::render_text() {
         return;
     }
     
-    auto shader = get_shader();
-    if (!shader || shader->get_id() == 0) {
-        std::cerr << "ERROR: Shader not available or not initialized!" << std::endl;
-        return;
-    }
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
     
-    shader->use();
+    auto material = get_material();
+    if (!material) {
+        std::cerr << "Label has no material!" << std::endl;
+        return;
+    }
     
-    // Рассчитываем начальную позицию в зависимости от выравнивания
+    auto shader_ptr = material->get_shader();
+    if (!shader_ptr) {
+        std::cerr << "Label material has no shader!" << std::endl;
+        return;
+    }
+    
+    Shader& shader = *shader_ptr;
+    shader.use();
+    
+    float window_width = 1280.0f;
+    float window_height = 720.0f;
+    glm::mat4 projection = glm::ortho(0.0f, window_width, window_height, 0.0f, 1.0f, -1.0f);
+    shader.set_uniform("projection", projection);
+    shader.set_uniform("textColor", glm::vec3(m_text_color));
+    shader.set_uniform("text", 0);
+    
     glm::vec2 text_size = calculate_text_size();
     glm::vec2 pos = get_position();
     glm::vec2 size = get_size();
     
     float x = pos.x;
-    float y = pos.y + size.y - text_size.y; // Текст рисуется снизу вверх
+    float y = pos.y;
     
-    // Горизонтальное выравнивание
     switch (m_align) {
         case ALIGN_CENTER:
-        x += (size.x - text_size.x) / 2.0f;
-        break;
+            x += (size.x - text_size.x) / 2.0f;
+            break;
         case ALIGN_RIGHT:
-        x += size.x - text_size.x;
-        break;
+            x += size.x - text_size.x;
+            break;
         case ALIGN_LEFT:
         default:
-        break;
+            break;
     }
     
-    // Вертикальное выравнивание
     switch (m_valign) {
         case VALIGN_CENTER:
-        y = pos.y + (size.y - text_size.y) / 2.0f;
-        break;
-        case VALIGN_TOP:
-        y = pos.y;
-        break;
+            y += (size.y - text_size.y) / 2.0f;
+            break;
         case VALIGN_BOTTOM:
+            y += size.y - text_size.y;
+            break;
+        case VALIGN_TOP:
         default:
-        y = pos.y + size.y - text_size.y;
-        break;
+            break;
     }
     
     glActiveTexture(GL_TEXTURE0);
@@ -275,21 +285,21 @@ void Label::render_text() {
         }
         
         float xpos = x + ch->second.bearing.x;
-        float ypos = y - (ch->second.size.y - ch->second.bearing.y);
+        float ypos = y - ch->second.bearing.y + m_font_size;
         
         float w = ch->second.size.x;
         float h = ch->second.size.y;
         
-        // Обновляем VBO для текущего символа
         float vertices[6][4] = {
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos,     ypos,       0.0f, 1.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
+
+            { xpos,     ypos,       0.0f, 0.0f },    // левый верхний (texY = 0)
+            { xpos,     ypos + h,   0.0f, 1.0f },    // левый нижний (texY = 1)
+            { xpos + w, ypos + h,   1.0f, 1.0f },    // правый нижний (texY = 1)
             
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-            { xpos + w, ypos + h,   1.0f, 0.0f }
-        };
+            { xpos,     ypos,       0.0f, 0.0f },    // левый верхний (texY = 0)
+            { xpos + w, ypos + h,   1.0f, 1.0f },    // правый нижний (texY = 1)
+            { xpos + w, ypos,       1.0f, 0.0f }     // правый верхний (texY = 0)
+};
         
         glBindTexture(GL_TEXTURE_2D, ch->second.texture_id);
         
@@ -299,12 +309,12 @@ void Label::render_text() {
         
         glDrawArrays(GL_TRIANGLES, 0, 6);
         
-        x += (ch->second.advance >> 6); // bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch->second.advance >> 6); // bitshift by 6 to get value in pixels
     }
     
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
 }
 
 glm::vec2 Label::calculate_text_size() const {
@@ -333,13 +343,12 @@ std::vector<std::string> Label::wrap_text() const {
         return lines;
     }
     
-    // Упрощенная реализация переноса слов
     std::istringstream iss(m_text);
     std::string word;
     std::string current_line;
     
     while (iss >> word) {
-        if (current_line.length() + word.length() + 1 > 50) { // 50 - примерная ширина
+        if (current_line.length() + word.length() + 1 > 50) {
             lines.push_back(current_line);
             current_line = word;
         } else {

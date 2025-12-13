@@ -18,7 +18,6 @@ void CanvasLayer::set_follow_viewport(bool follow) {
 void CanvasLayer::add_item(CanvasItem* item) {
     if (!item) return;
     
-    // Проверяем, нет ли уже этого элемента
     for (auto existing : m_items) {
         if (existing == item) {
             return;
@@ -46,20 +45,17 @@ void CanvasLayer::ready() {
 void CanvasLayer::process(float delta) {
     Node2D::process(delta);
     
-    // Обрабатываем все элементы
     for (auto item : m_items) {
         item->process(delta);
     }
 }
 
 void CanvasLayer::render() {
-    // Сортируем элементы по Z-index
     std::sort(m_items.begin(), m_items.end(),
         [](CanvasItem* a, CanvasItem* b) {
             return a->get_z_index() < b->get_z_index();
         });
     
-    // Рендерим все элементы
     for (auto item : m_items) {
         if (item->is_visible_in_tree()) {
             item->_draw();

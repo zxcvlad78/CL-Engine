@@ -1,3 +1,5 @@
+//main_loop.cpp 
+
 #include "main_loop.h"
 #include "window/window.h"
 #include "viewport/viewport.h"
@@ -43,33 +45,27 @@ void MainLoop::process() {
     static auto last_time = std::chrono::high_resolution_clock::now();
     auto current_time = std::chrono::high_resolution_clock::now();
     
-    // Вычисляем delta time
     m_delta_time = std::chrono::duration<float>(current_time - last_time).count();
     last_time = current_time;
     
-    // Ограничиваем delta time
     if (m_delta_time > 0.1f) {
         m_delta_time = 0.1f;
     }
     
-    // Обрабатываем события окна
     if (m_window) {
         m_window->poll_events();
     }
     
-    // Обрабатываем логику сцены
     if (m_scene_tree) {
         m_scene_tree->process(m_delta_time);
     }
     
-    // Рассчитываем FPS
     calculate_fps();
 }
 
 void MainLoop::physics_process() {
-    // Физика должна работать с фиксированным шагом времени
     static float accumulator = 0.0f;
-    const float physics_delta = 1.0f / 60.0f; // 60 FPS для физики
+    const float physics_delta = 1.0f / 60.0f;
     
     accumulator += m_delta_time;
     
@@ -82,39 +78,34 @@ void MainLoop::physics_process() {
 }
 
 void MainLoop::render() {
-    // Очищаем окно
     if (m_window) {
         m_window->clear();
     }
     
-    // Рендерим основной viewport
     if (m_main_viewport) {
         m_main_viewport->render();
     }
     
-    // Рендерим сцену
     if (m_scene_tree) {
         m_scene_tree->render();
     }
     
-    // Отображаем результат
     if (m_window) {
         m_window->swap_buffers();
     }
     
-    // Ограничение FPS
     if (m_target_fps > 0) {
-        static auto last_frame_time = std::chrono::high_resolution_clock::now(); // Исправлено
+        static auto last_frame_time = std::chrono::high_resolution_clock::now();
         auto end_time = std::chrono::high_resolution_clock::now();
-        float elapsed = std::chrono::duration<float>(end_time - last_frame_time).count(); // Исправлено
+        float elapsed = std::chrono::duration<float>(end_time - last_frame_time).count();
         
         if (elapsed < m_target_fps) {
-            float sleep_time = (1.0f / m_target_fps) - elapsed; // Исправлено
+            float sleep_time = (1.0f / m_target_fps) - elapsed;
             if (sleep_time > 0.001f) {
                 std::this_thread::sleep_for(std::chrono::duration<float>(sleep_time));
             }
         }
-        last_frame_time = end_time; // Добавлено
+        last_frame_time = end_time;
     }
     
 }
@@ -129,7 +120,6 @@ bool MainLoop::should_quit() const {
     }
     
     if (m_scene_tree) {
-        // Проверяем, не запросил ли SceneTree выход
         // (нужно добавить метод в SceneTree)
     }
     
@@ -156,8 +146,5 @@ void MainLoop::calculate_fps() {
         m_fps = static_cast<float>(frame_count) / time_accumulator;
         frame_count = 0;
         time_accumulator = 0.0f;
-        
-        // Вывод FPS (можно убрать в релизе)
-        std::cout << "FPS: " << m_fps << std::endl;
     }
 }

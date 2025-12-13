@@ -56,8 +56,6 @@ void Control::set_anchor(Side side, float anchor, bool keep_margin) {
         *anchor_ptr = anchor;
         
         if (keep_margin) {
-            // Регулируем margins чтобы сохранить позицию
-            // (упрощенная реализация)
         }
         
         update_anchors_and_margins();
@@ -103,7 +101,6 @@ float Control::get_margin(Side side) const {
 }
 
 void Control::set_anchor_preset(AnchorPreset preset, bool keep_margin) {
-    // Упрощенная реализация пресетов
     switch (preset) {
         case PRESET_TOP_LEFT:
             m_anchor.left = 0.0f; m_anchor.top = 0.0f;
@@ -117,7 +114,6 @@ void Control::set_anchor_preset(AnchorPreset preset, bool keep_margin) {
             m_anchor.left = 0.0f; m_anchor.top = 0.0f;
             m_anchor.right = 1.0f; m_anchor.bottom = 1.0f;
             break;
-        // ... другие пресеты
         default:
             m_anchor.left = 0.0f; m_anchor.top = 0.0f;
             m_anchor.right = 0.0f; m_anchor.bottom = 0.0f;
@@ -216,8 +212,6 @@ void Control::connect_focus_exited(const std::function<void()>& callback) {
 
 void Control::_draw() {
     CanvasItem::_draw();
-    // Control по умолчанию рисует прямоугольник
-    // Производные классы переопределят этот метод
 }
 
 void Control::_process(float delta) {
@@ -254,8 +248,8 @@ void Control::process(float delta) {
     CanvasItem::process(delta);
 }
 
-void Control::_notification(int what) {
-    // Базовая реализация - ничего не делает
+void Control::_notification(int what)
+{
 }
 
 glm::vec2 Control::get_minimum_size() const {
@@ -263,8 +257,7 @@ glm::vec2 Control::get_minimum_size() const {
 }
 
 void Control::update_anchors_and_margins() {
-    // В реальной реализации вычисляет rect на основе anchors и margins
-    // Пока оставим пустым
+    // в реальной реализации вычисляет rect на основе anchors и margins
 }
 
 bool Control::is_point_inside(const glm::vec2& point) const {

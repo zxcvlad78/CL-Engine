@@ -12,28 +12,22 @@ public:
     explicit SceneTree(const std::string& name = "SceneTree");
     ~SceneTree() override;
     
-    // Управление сценой
     void set_current_scene(std::shared_ptr<Node> scene);
     std::shared_ptr<Node> get_current_scene() const { return m_current_scene; }
     
-    // Viewports
     void add_viewport(std::shared_ptr<Viewport> viewport);
     void remove_viewport(Viewport* viewport);
     
-    // Жизненный цикл
     void ready() override;
     void process(float delta) override;
     void physics_process(float delta) override;
     void render();
     
-    // Управление
     void quit();
     
-    // Информация о дереве сцены
     std::string get_scene_tree_info(int indent = 0) const override;
     std::string get_full_scene_hierarchy() const;
     
-    // Поиск узлов
     template<typename T>
     std::vector<T*> find_nodes_of_type() const {
         std::vector<T*> result;

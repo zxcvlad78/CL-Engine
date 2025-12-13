@@ -12,11 +12,9 @@ public:
     explicit Node(const std::string& name = "Node");
     virtual ~Node();
     
-    // Имя узла
     const std::string& get_name() const { return m_name; }
     void set_name(const std::string& name) { m_name = name; }
     
-    // Иерархия
     Node* get_parent() const { return m_parent; }
     Node* get_child(int index) const;
     int get_child_count() const { return static_cast<int>(m_children.size()); }
@@ -27,18 +25,15 @@ public:
     Node* find_node(const std::string& path) const;
     Node* find_node(const std::function<bool(Node*)>& predicate) const;
     
-    // Жизненный цикл
     virtual void ready();
     virtual void enter_tree();
     virtual void exit_tree();
     virtual void process(float delta);
     virtual void physics_process(float delta);
     
-    // Состояние
     bool is_inside_tree() const { return m_inside_tree; }
     virtual bool is_visible_in_tree() const { return true; }
     
-    // Дерево сцены
     virtual std::string get_scene_tree_info(int indent = 0) const;
     void print_scene_tree() const;
     

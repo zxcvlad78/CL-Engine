@@ -4,7 +4,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-// Простой шейдер для текстур
 namespace {
     const char* texture_vs = R"(
         #version 330 core
@@ -36,7 +35,6 @@ namespace {
         }
     )";
     
-    // Глобальные переменные для шейдера и буферов
     GLuint texture_shader = 0;
     GLuint texture_vao = 0;
     GLuint texture_vbo = 0;
@@ -47,12 +45,10 @@ namespace {
     void compile_texture_shader() {
         if (shader_compiled) return;
         
-        // Компиляция вершинного шейдера
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex_shader, 1, &texture_vs, NULL);
         glCompileShader(vertex_shader);
         
-        // Проверка ошибок компиляции
         GLint success;
         glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
         if (!success) {
@@ -61,7 +57,6 @@ namespace {
             std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << info_log << std::endl;
         }
         
-        // Компиляция фрагментного шейдера
         GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment_shader, 1, &texture_fs, NULL);
         glCompileShader(fragment_shader);
@@ -73,7 +68,6 @@ namespace {
             std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << info_log << std::endl;
         }
         
-        // Создание шейдерной программы
         texture_shader = glCreateProgram();
         glAttachShader(texture_shader, vertex_shader);
         glAttachShader(texture_shader, fragment_shader);
@@ -89,18 +83,17 @@ namespace {
         glDeleteShader(vertex_shader);
         glDeleteShader(fragment_shader);
         
-        // Создание вершинного буфера
         float vertices[] = {
-            // Позиции        // Текстурные координаты
-            0.0f, 0.0f,       0.0f, 0.0f,  // нижний левый
-            1.0f, 0.0f,       1.0f, 0.0f,  // нижний правый
-            0.0f, 1.0f,       0.0f, 1.0f,  // верхний левый
-            1.0f, 1.0f,       1.0f, 1.0f   // верхний правый
+            // Positions        // Texture cord
+            0.0f, 0.0f,       0.0f, 0.0f,  // bottom left
+            1.0f, 0.0f,       1.0f, 0.0f,  // bottom right
+            0.0f, 1.0f,       0.0f, 1.0f,  // top left
+            1.0f, 1.0f,       1.0f, 1.0f   // top right
         };
         
         unsigned int indices[] = {
-            0, 1, 2,  // первый треугольник
-            1, 2, 3   // второй треугольник
+            0, 1, 2,  // first triangle
+            1, 2, 3   // second triangle
         };
         
         glGenVertexArrays(1, &texture_vao);
@@ -115,11 +108,9 @@ namespace {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, texture_ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
         
-        // Атрибут позиции
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         
-        // Атрибут текстурных координат
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
         glEnableVertexAttribArray(1);
         
@@ -198,7 +189,6 @@ void TextureRect::_notification(int what) {
 }
 
 void TextureRect::draw_texture() {
-    // Компилируем шейдер если еще не скомпилирован
     compile_texture_shader();
     
     if (!texture_shader) {
@@ -206,7 +196,6 @@ void TextureRect::draw_texture() {
         return;
     }
     
-    // Получаем позицию и размер
     glm::vec2 pos = get_position();
     glm::vec2 size = get_size();
     
@@ -214,44 +203,35 @@ void TextureRect::draw_texture() {
         return;
     }
     
-    // Получаем ID текстуры
     GLuint texture_id = m_texture->get_id();
     if (texture_id == 0) {
         std::cerr << "Texture ID is 0" << std::endl;
         return;
     }
     
-    // Получаем исходный размер текстуры
     glm::ivec2 texture_size = m_texture->get_size();
     
-    // Вычисляем область текстуры для отрисовки
     glm::vec4 tex_coords = get_draw_rect();
     
-    // Настраиваем растяжение в зависимости от режима
     glm::vec2 final_size = size;
     glm::vec2 final_pos = pos;
     
     switch (m_stretch_mode) {
         case STRETCH_SCALE:
-            // Просто масштабируем под размер контрола
             break;
             
         case STRETCH_KEEP:
-            // Сохраняем оригинальный размер текстуры
             final_size = glm::vec2(texture_size);
             break;
             
         case STRETCH_KEEP_ASPECT: {
-            // Сохраняем пропорции, вписываем в контрол
             float texture_aspect = (float)texture_size.x / texture_size.y;
             float control_aspect = size.x / size.y;
             
             if (texture_aspect > control_aspect) {
-                // Ширина ограничивающая
                 final_size.y = size.x / texture_aspect;
                 final_pos.y = pos.y + (size.y - final_size.y) / 2.0f;
             } else {
-                // Высота ограничивающая
                 final_size.x = size.y * texture_aspect;
                 final_pos.x = pos.x + (size.x - final_size.x) / 2.0f;
             }
@@ -259,16 +239,13 @@ void TextureRect::draw_texture() {
         }
             
         case STRETCH_KEEP_ASPECT_CENTERED: {
-            // Сохраняем пропорции, центрируем
             float texture_aspect = (float)texture_size.x / texture_size.y;
             float control_aspect = size.x / size.y;
             
             if (texture_aspect > control_aspect) {
-                // Ширина ограничивающая
                 final_size = glm::vec2(size.x, size.x / texture_aspect);
                 final_pos = glm::vec2(pos.x, pos.y + (size.y - final_size.y) / 2.0f);
             } else {
-                // Высота ограничивающая
                 final_size = glm::vec2(size.y * texture_aspect, size.y);
                 final_pos = glm::vec2(pos.x + (size.x - final_size.x) / 2.0f, pos.y);
             }
@@ -276,29 +253,24 @@ void TextureRect::draw_texture() {
         }
             
         case STRETCH_KEEP_ASPECT_COVERED: {
-            // Сохраняем пропорции, заполняем контрол (обрезаем)
             float texture_aspect = (float)texture_size.x / texture_size.y;
             float control_aspect = size.x / size.y;
             
             if (texture_aspect > control_aspect) {
-                // Высота ограничивающая, обрезаем по ширине
                 float scale = size.y / texture_size.y;
                 final_size = glm::vec2(texture_size.x * scale, size.y);
                 float excess_width = (final_size.x - size.x) / 2.0f;
                 final_pos.x = pos.x - excess_width;
                 
-                // Настраиваем текстурные координаты для обрезки
                 float tex_excess = excess_width / final_size.x;
                 tex_coords.x += tex_excess;
                 tex_coords.z -= 2.0f * tex_excess;
             } else {
-                // Ширина ограничивающая, обрезаем по высоте
                 float scale = size.x / texture_size.x;
                 final_size = glm::vec2(size.x, texture_size.y * scale);
                 float excess_height = (final_size.y - size.y) / 2.0f;
                 final_pos.y = pos.y - excess_height;
                 
-                // Настраиваем текстурные координаты для обрезки
                 float tex_excess = excess_height / final_size.y;
                 tex_coords.y += tex_excess;
                 tex_coords.w -= 2.0f * tex_excess;
@@ -307,27 +279,22 @@ void TextureRect::draw_texture() {
         }
             
         case STRETCH_TILE:
-            // Режим плитки (упрощенная реализация)
             std::cout << "Tile stretch mode not fully implemented" << std::endl;
             break;
     }
     
-    // Включаем смешивание для прозрачности
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    // Используем шейдер
     glUseProgram(texture_shader);
     
-    // Устанавливаем матрицу проекции (орто)
-    float window_width = 1280.0f;  // TODO: получить из viewport
-    float window_height = 720.0f;  // TODO: получить из viewport
+    float window_width = 1280.0f;  // получить из viewport
+    float window_height = 720.0f;  // получить из viewport
     glm::mat4 projection = glm::ortho(0.0f, window_width, window_height, 0.0f, -1.0f, 1.0f);
     
     GLuint proj_loc = glGetUniformLocation(texture_shader, "projection");
     glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
     
-    // Трансформация модели
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(final_pos, 0.0f));
     model = glm::scale(model, glm::vec3(final_size, 1.0f));
@@ -335,19 +302,15 @@ void TextureRect::draw_texture() {
     GLuint model_loc = glGetUniformLocation(texture_shader, "model");
     glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
     
-    // Привязываем текстуру
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture_id);
     
-    // Устанавливаем uniform для текстуры
     GLuint texture_loc = glGetUniformLocation(texture_shader, "texture0");
     glUniform1i(texture_loc, 0);
     
-    // Устанавливаем modulate цвет (по умолчанию белый)
     GLuint modulate_loc = glGetUniformLocation(texture_shader, "modulate");
     glUniform4f(modulate_loc, 1.0f, 1.0f, 1.0f, 1.0f);
     
-    // Обновляем текстурные координаты в VBO в зависимости от flip режима
     float tex_vertices[] = {
         0.0f, 0.0f,   tex_coords.x, tex_coords.y,
         1.0f, 0.0f,   tex_coords.x + tex_coords.z, tex_coords.y,
@@ -358,16 +321,10 @@ void TextureRect::draw_texture() {
     glBindBuffer(GL_ARRAY_BUFFER, texture_vbo);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(tex_vertices), tex_vertices);
     
-    // Рисуем
     glBindVertexArray(texture_vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     
-    // Отключаем смешивание
     glDisable(GL_BLEND);
-    
-    // Отладочный вывод
-    // std::cout << "TextureRect drawn at (" << pos.x << ", " << pos.y 
-    //           << ") size: " << size.x << "x" << size.y << std::endl;
 }
 
 glm::vec4 TextureRect::get_draw_rect() const {

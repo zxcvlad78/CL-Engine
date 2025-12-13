@@ -9,7 +9,6 @@
 #include <map>
 #include <functional>
 
-// Простой класс для событий ввода
 struct InputEvent {
     enum Type {
         MOUSE_BUTTON,
@@ -28,7 +27,6 @@ public:
     explicit Control(const std::string& name = "Control");
     ~Control() override = default;
     
-    // Размер и положение
     void set_rect(const glm::vec4& rect); // x, y, width, height
     glm::vec4 get_rect() const { return m_rect; }
     
@@ -42,7 +40,6 @@ public:
     float get_width() const { return m_rect.z; }
     float get_height() const { return m_rect.w; }
     
-    // Якоря и отступы (anchors & margins)
     enum AnchorPreset {
         PRESET_TOP_LEFT,
         PRESET_TOP_RIGHT,
@@ -77,7 +74,6 @@ public:
     
     void set_anchor_preset(AnchorPreset preset, bool keep_margin = true);
     
-    // Выравнивание
     enum SizeFlags {
         SIZE_FILL = 1,
         SIZE_EXPAND = 2,
@@ -91,7 +87,6 @@ public:
     void set_v_size_flags(int flags);
     int get_v_size_flags() const { return m_v_size_flags; }
     
-    // Фокус
     void grab_focus();
     void release_focus();
     bool has_focus() const { return m_has_focus; }
@@ -105,25 +100,21 @@ public:
     void set_focus_mode(FocusMode mode);
     FocusMode get_focus_mode() const { return m_focus_mode; }
     
-    // Текст
     void set_text(const std::string& text);
     const std::string& get_text() const { return m_text; }
     
     void set_tooltip(const std::string& tooltip);
     const std::string& get_tooltip() const { return m_tooltip; }
     
-    // Тема и стили (упрощенно)
     void set_theme(const std::shared_ptr<class Theme>& theme);
     std::shared_ptr<class Theme> get_theme() const { return m_theme; }
     
-    // События
     void connect_gui_input(const std::function<void(const InputEvent&)>& callback);
     void connect_mouse_entered(const std::function<void()>& callback);
     void connect_mouse_exited(const std::function<void()>& callback);
     void connect_focus_entered(const std::function<void()>& callback);
     void connect_focus_exited(const std::function<void()>& callback);
     
-    // CanvasItem методы
     void _draw() override;
     void _process(float delta) override;
     void _ready() override;
@@ -131,10 +122,8 @@ public:
     void _mouse_enter();
     void _mouse_exit();
     
-    // Переопределение Node методов
     void process(float delta) override;
     
-    // Уведомления (упрощенно)
     enum Notification {
         NOTIFICATION_RESIZED,
         NOTIFICATION_THEME_CHANGED
@@ -142,7 +131,6 @@ public:
     
     virtual void _notification(int what);
     
-    // Минимальный размер
     virtual glm::vec2 get_minimum_size() const;
     
 protected:

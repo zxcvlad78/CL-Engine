@@ -67,7 +67,6 @@ std::string ResourceManager::get_absolute_path(const std::string& relative_file_
     std::string normalized_relative = relative_file_path;
     std::replace(normalized_relative.begin(), normalized_relative.end(), '\\', '/');
     
-    // Создаем полный путь
     std::filesystem::path full_path = std::filesystem::path( get_executable_path() ) / normalized_relative;
     std::string result = full_path.string();
     

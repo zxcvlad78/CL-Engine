@@ -1,8 +1,7 @@
 #include "material.h"
-#include "renderer/shader/shader.h"
 
-Material::Material() {
-    // Конструктор по умолчанию
+Material::Material()
+{
 }
 
 void Material::set_shader(const std::shared_ptr<Shader>& shader) {

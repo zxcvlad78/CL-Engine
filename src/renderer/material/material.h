@@ -3,8 +3,7 @@
 
 #include <memory>
 #include <string>
-
-class Shader;
+#include "renderer/shader/shader.h"
 
 class Material {
 public:
@@ -14,7 +13,7 @@ public:
     void set_shader(const std::shared_ptr<Shader>& shader);
     std::shared_ptr<Shader> get_shader() const { return m_shader; }
     
-    virtual void apply() = 0;
+    void apply();
     
 private:
     std::shared_ptr<Shader> m_shader;

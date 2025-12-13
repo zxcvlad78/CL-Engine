@@ -5,43 +5,34 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <functional>
-#include "renderer/shader/shader.h"
+#include "renderer/material/material.h"
 
 class CanvasItem : public Node {
 public:
     explicit CanvasItem(const std::string& name = "CanvasItem");
     ~CanvasItem() override = default;
     
-    // Видимость
     void show();
     void hide();
     void set_visible(bool visible);
     bool is_visible() const { return m_visible; }
     bool is_visible_in_tree() const;
     
-    // Модуляция цвета
     void set_modulate(const glm::vec4& color);
     const glm::vec4& get_modulate() const { return m_modulate; }
     
-    // Z-index и порядок отрисовки
     void set_z_index(int index);
     int get_z_index() const { return m_z_index; }
     
     void set_z_as_relative(bool relative);
     bool is_z_relative() const { return m_z_as_relative; }
     
-    // Self-modulate (только для этого элемента)
     void set_self_modulate(const glm::vec4& color);
     const glm::vec4& get_self_modulate() const { return m_self_modulate; }
     
-    // Прозрачность
     void set_opacity(float opacity);
     float get_opacity() const { return m_opacity; }
 
-    void set_shader(const std::shared_ptr<Shader>& shader);
-    std::shared_ptr<Shader> get_shader() const;
-
-    // Режимы смешивания
     enum BlendMode {
         BLEND_MIX,
         BLEND_ADD,
@@ -53,7 +44,6 @@ public:
     void set_blend_mode(BlendMode mode);
     BlendMode get_blend_mode() const { return m_blend_mode; }
     
-    // Режимы света
     enum LightMode {
         LIGHT_MODE_NORMAL,
         LIGHT_MODE_UNSHADED,
@@ -63,14 +53,12 @@ public:
     void set_light_mode(LightMode mode);
     LightMode get_light_mode() const { return m_light_mode; }
     
-    // Пользовательские шейдеры
-    void set_material(const std::shared_ptr<class Material>& material);
-    std::shared_ptr<class Material> get_material() const { return m_material; }
+    void set_material(const std::shared_ptr<Material>& material);
+    std::shared_ptr<Material> get_material() const { return m_material; }
     
     void set_use_parent_material(bool use);
     bool is_using_parent_material() const { return m_use_parent_material; }
     
-    // Обновление и рендеринг
     virtual void _draw();
     virtual void _process(float delta) {}
     virtual void _ready() {}
@@ -80,7 +68,6 @@ public:
     void queue_redraw();
     void update();
     
-    // Трансформация (добавляем для CanvasItem)
     void set_position(const glm::vec2& position);
     const glm::vec2& get_position() const { return m_position; }
     
@@ -96,13 +83,11 @@ public:
     glm::mat3 get_global_transform() const;
     glm::mat3 get_global_transform_with_canvas() const;
     
-    // Переопределение методов Node
     void ready() override;
     void process(float delta) override;
     void enter_tree() override;
     void exit_tree() override;
     
-    // Сигналы (упрощенно)
     using DrawCallback = std::function<void()>;
     void connect_draw(const DrawCallback& callback);
     
@@ -116,7 +101,6 @@ protected:
     bool m_needs_redraw = true;
     bool m_use_parent_material = false;
     
-    // Трансформация
     glm::vec2 m_position = glm::vec2(0.0f);
     float m_rotation = 0.0f;
     glm::vec2 m_scale = glm::vec2(1.0f);
@@ -125,8 +109,7 @@ protected:
     
     BlendMode m_blend_mode = BLEND_MIX;
     LightMode m_light_mode = LIGHT_MODE_NORMAL;
-    std::shared_ptr<class Material> m_material;
-    std::shared_ptr<Shader> m_shader;
+    std::shared_ptr<Material> m_material;
     
 private:
     void update_transform();

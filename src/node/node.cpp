@@ -9,7 +9,6 @@ Node::Node(const std::string& name)
 
 Node::~Node() {
     
-    // Удаляем всех детей
     for (auto& child : m_children) {
         if (child->is_inside_tree()) {
             child->exit_tree();
@@ -65,7 +64,6 @@ void Node::remove_child(Node* child) {
 }
 
 Node* Node::find_node(const std::string& path) const {
-    // Простой поиск по имени
     for (const auto& child : m_children) {
         if (child->get_name() == path) {
             return child.get();
@@ -135,11 +133,9 @@ void Node::physics_process(float delta) {
 std::string Node::get_scene_tree_info(int indent) const {
     std::string result;
     
-    // Отступ для текущего узла
     std::string indent_str(indent * 2, ' ');
     result += indent_str + "└─ " + m_name + " (" + typeid(*this).name() + ")\n";
     
-    // Информация о детях
     for (const auto& child : m_children) {
         result += child->get_scene_tree_info(indent + 1);
     }

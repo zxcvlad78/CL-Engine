@@ -17,7 +17,6 @@ Shader::~Shader() {
 }
 
 bool Shader::load_from_files(const std::string& vertex_path, const std::string& fragment_path) {
-    // Чтение vertex shader
     std::string vertex_code;
     std::ifstream vertex_file(vertex_path);
     if (vertex_file.is_open()) {
@@ -30,7 +29,6 @@ bool Shader::load_from_files(const std::string& vertex_path, const std::string& 
         return false;
     }
     
-    // Чтение fragment shader
     std::string fragment_code;
     std::ifstream fragment_file(fragment_path);
     if (fragment_file.is_open()) {
@@ -50,7 +48,6 @@ bool Shader::load_from_strings(const std::string& vertex_code, const std::string
     const char* vertex_shader_code = vertex_code.c_str();
     const char* fragment_shader_code = fragment_code.c_str();
     
-    // Компиляция vertex shader
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertex_shader_code, NULL);
     glCompileShader(vertex_shader);
@@ -59,7 +56,6 @@ bool Shader::load_from_strings(const std::string& vertex_code, const std::string
         return false;
     }
     
-    // Компиляция fragment shader
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &fragment_shader_code, NULL);
     glCompileShader(fragment_shader);
@@ -69,7 +65,6 @@ bool Shader::load_from_strings(const std::string& vertex_code, const std::string
         return false;
     }
     
-    // Создание shader program
     m_id = glCreateProgram();
     glAttachShader(m_id, vertex_shader);
     glAttachShader(m_id, fragment_shader);
@@ -82,7 +77,6 @@ bool Shader::load_from_strings(const std::string& vertex_code, const std::string
         return false;
     }
     
-    // Удаляем shaders после линковки
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
     

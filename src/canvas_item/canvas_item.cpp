@@ -54,7 +54,6 @@ void CanvasItem::set_modulate(const glm::vec4& color) {
 void CanvasItem::set_z_index(int index) {
     if (m_z_index != index) {
         m_z_index = index;
-        // Уведомляем родительский CanvasLayer об изменении Z-index
         queue_redraw();
     }
 }
@@ -135,14 +134,13 @@ void CanvasItem::set_scale(const glm::vec2& scale) {
 void CanvasItem::set_transform(const glm::mat3& transform) {
     if (m_transform != transform) {
         m_transform = transform;
-        m_transform_dirty = false; // Уже обновлено напрямую
+        m_transform_dirty = false; 
         queue_redraw();
     }
 }
 
 void CanvasItem::update_transform() {
     if (m_transform_dirty) {
-        // Создаем матрицу трансформации: Translate * Rotate * Scale
         glm::mat3 translation = glm::mat3(1.0f);
         translation[2][0] = m_position.x;
         translation[2][1] = m_position.y;
@@ -167,7 +165,6 @@ void CanvasItem::update_transform() {
 glm::mat3 CanvasItem::get_global_transform() const {
     glm::mat3 global_transform = m_transform;
     
-    // Умножаем на трансформации родителей
     const Node* parent = get_parent();
     while (parent) {
         const CanvasItem* parent_canvas_item = dynamic_cast<const CanvasItem*>(parent);
@@ -181,14 +178,12 @@ glm::mat3 CanvasItem::get_global_transform() const {
 }
 
 glm::mat3 CanvasItem::get_global_transform_with_canvas() const {
-    // Для простоты возвращаем глобальную трансформацию
-    // В реальной реализации нужно учитывать CanvasLayer трансформации
+    // в реальной реализации нужно учитывать CanvasLayer трансформации
     return get_global_transform();
 }
 
 void CanvasItem::_draw() {
-    // Пустая реализация по умолчанию
-    // Производные классы должны переопределить этот метод
+    // производные классы должны переопределить этот метод
     
     if (m_draw_callback) {
         m_draw_callback();
@@ -237,16 +232,4 @@ void CanvasItem::exit_tree() {
 
 void CanvasItem::connect_draw(const DrawCallback& callback) {
     m_draw_callback = callback;
-}
-
-void CanvasItem::set_shader(const std::shared_ptr<Shader>& shader) {
-    if (m_shader != shader) {
-        m_shader = shader;
-        queue_redraw();
-    }
-}
-
-std::shared_ptr<Shader> CanvasItem::get_shader() const
-{
-    return m_shader;
 }

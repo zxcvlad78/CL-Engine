@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <unordered_map>
 
 class Shader {
@@ -18,7 +19,6 @@ public:
     void use() const;
     GLuint get_id() const { return m_id; }
     
-    // Uniform setters
     void set_bool(const std::string& name, bool value) const;
     void set_int(const std::string& name, int value) const;
     void set_float(const std::string& name, float value) const;
@@ -28,7 +28,25 @@ public:
     void set_mat2(const std::string& name, const glm::mat2& mat) const;
     void set_mat3(const std::string& name, const glm::mat3& mat) const;
     void set_mat4(const std::string& name, const glm::mat4& mat) const;
+    void set_uniform(const std::string& name, const glm::mat4& mat) {
+        glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+    }
     
+    void set_uniform(const std::string& name, const glm::vec4& vec) {
+        glUniform4f(glGetUniformLocation(m_id, name.c_str()), vec.x, vec.y, vec.z, vec.w);
+    }
+    
+    void set_uniform(const std::string& name, const glm::vec3& vec) {
+        glUniform3f(glGetUniformLocation(m_id, name.c_str()), vec.x, vec.y, vec.z);
+    }
+    
+    void set_uniform(const std::string& name, float value) {
+        glUniform1f(glGetUniformLocation(m_id, name.c_str()), value);
+    }
+    
+    void set_uniform(const std::string& name, int value) {
+        glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
+    }
 private:
     GLuint m_id = 0;
     mutable std::unordered_map<std::string, GLint> m_uniform_cache;

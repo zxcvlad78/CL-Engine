@@ -9,16 +9,16 @@
 #include "control/button/button.h"
 #include "engine/engine.h"
 #include "resources/resource_manager.h"
+#include "renderer/material/material.h"
+#include "renderer/shader/shader.h"
 
 int main() {
     std::cout << "Starting CL Engine..." << std::endl;
-    
-    // Инициализация движка
+
     Engine engine;
     engine.set_target_fps(60.0f);
     
     ResourceManager resource_manager;
-    // Создаем окно
     Window::Config config;
     config.title = "CL Engine";
     config.width = 1280;
@@ -40,14 +40,20 @@ int main() {
     auto canvas_layer = std::make_shared<CanvasLayer>("MainCanvasLayer");
     canvas_layer->set_layer(0);
     
-    // Label Shader
+    
+    // Text Shader
     auto label_shader = std::make_shared<Shader>();
-    label_shader->load_from_files(ResourceManager::get_absolute_path("res/shaders/text/vertex.txt"),
-        ResourceManager::get_absolute_path("res/shaders/text/fragment.txt"));
+    label_shader->load_from_files(
+        ResourceManager::get_absolute_path("res/shaders/text/vertex.txt"),
+        ResourceManager::get_absolute_path("res/shaders/text/fragment.txt")
+    );
+    // Label Material
+    auto label_material = std::make_shared<Material>();
+    label_material->set_shader(label_shader);
 
     // FPS Label
     auto fps_label = std::make_shared<Label>("FPSLabel");
-    fps_label->set_shader(label_shader);
+    fps_label->set_material(label_material);
 
     fps_label->set_font( ResourceManager::get_absolute_path("res/fonts/default.otf"));
     fps_label->set_font_size(24);
@@ -77,29 +83,15 @@ int main() {
     viewport->set_background_color({0.2f, 0.2, 0.2f, 1.0f});
     viewport->add_layer(canvas_layer.get());
     
-    // Добавляем viewport в SceneTree
     scene_tree->add_viewport(viewport);
-    
-    // Устанавливаем текущую сцену
     scene_tree->set_current_scene(canvas_layer);
     
-    // Вход в дерево
     viewport->enter_tree();
     viewport->ready();
 
-    std::cout
-        << "Shader: " << fps_label->get_shader()
-        << "\n"
-        << "Font: " << fps_label->get_font()
-        << "\n"
-        << "Text: " << fps_label->get_text()
-        << std::endl;
-
     while (!window.should_close()) {
-        // Обработка времени
         engine.process();
         
-        // Обновляем FPS
         static int frame_count = 0;
         static float time_accumulator = 0.0f;
         time_accumulator += engine.get_delta_time();
@@ -107,26 +99,20 @@ int main() {
         
         if (time_accumulator >= 1.0f) {
             float fps = frame_count / time_accumulator;
-            //fps_label->set_text("FPS: " + std::to_string(static_cast<int>(fps)));
-            fps_label->set_text("CL Engine Hello!");
+            fps_label->set_text("FPS: " + std::to_string(static_cast<int>(fps)));
             frame_count = 0;
             time_accumulator = 0.0f;
             
         }
         
-        // Обработка событий
         window.poll_events();
         
-        // Очистка экрана
         window.clear(glm::vec4(0.4f, 0.4f, 0.4f, 1.0f));
         
-        // Обработка сцены
         scene_tree->process(engine.get_delta_time());
         
-        // Рендеринг
         scene_tree->render();
-        
-        // Обмен буферов
+
         window.swap_buffers();
     
     }

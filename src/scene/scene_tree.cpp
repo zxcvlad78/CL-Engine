@@ -105,22 +105,18 @@ void SceneTree::quit() {
 std::string SceneTree::get_scene_tree_info(int indent) const {
     std::stringstream ss;
     
-    // Отступ для корня
     std::string indent_str(indent * 2, ' ');
     ss << indent_str << "└─ " << get_name() << " (SceneTree)\n";
     
-    // Viewports
     indent_str = std::string((indent + 1) * 2, ' ');
     for (const auto& viewport : m_viewports) {
         ss << indent_str << "├─ Viewport: " << viewport->get_name() << "\n";
     }
     
-    // Текущая сцена
     if (m_current_scene) {
         ss << m_current_scene->get_scene_tree_info(indent + 1);
     }
     
-    // Дети SceneTree
     for (int i = 0; i < get_child_count(); ++i) {
         if (get_child(i) != m_current_scene.get()) {
             ss << get_child(i)->get_scene_tree_info(indent + 1);
@@ -136,13 +132,11 @@ std::string SceneTree::get_full_scene_hierarchy() const {
     ss << "=== Full Scene Hierarchy ===\n";
     ss << "Scene Tree: " << get_name() << "\n\n";
     
-    // Viewports
     ss << "Viewports (" << m_viewports.size() << "):\n";
     for (size_t i = 0; i < m_viewports.size(); ++i) {
         ss << "  [" << i << "] " << m_viewports[i]->get_name() << "\n";
     }
     
-    // Текущая сцена
     ss << "\nCurrent Scene:\n";
     if (m_current_scene) {
         ss << "  " << m_current_scene->get_scene_tree_info(1);
@@ -150,7 +144,6 @@ std::string SceneTree::get_full_scene_hierarchy() const {
         ss << "  None\n";
     }
     
-    // Все узлы
     ss << "\nAll Nodes in Tree:\n";
     ss << get_scene_tree_info(0);
     

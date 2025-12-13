@@ -11,15 +11,12 @@ public:
     explicit Button(const std::string& name = "Button");
     ~Button() override = default;
     
-    // Текст кнопки
     void set_text(const std::string& text);
     const std::string& get_text() const { return m_text; }
     
-    // Иконка
     void set_icon(const std::shared_ptr<Texture>& icon);
     std::shared_ptr<Texture> get_icon() const { return m_icon; }
     
-    // Состояния кнопки
     enum ButtonState {
         STATE_NORMAL,
         STATE_HOVER,
@@ -36,11 +33,9 @@ public:
     void set_pressed(bool pressed);
     bool is_pressed() const { return m_pressed; }
     
-    // Сигналы
     void connect_pressed(const std::function<void()>& callback);
     void connect_toggled(const std::function<void(bool)>& callback);
     
-    // Control методы
     void _draw() override;
     void _gui_input(const InputEvent& event);
     void _mouse_enter();
@@ -54,7 +49,6 @@ private:
     bool m_toggle_mode = false;
     bool m_pressed = false;
     
-    // Callbacks
     std::function<void()> m_pressed_callback;
     std::function<void(bool)> m_toggled_callback;
     
