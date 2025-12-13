@@ -63,19 +63,31 @@ int main() {
     fps_label->set_text("FPS: 0");
     
     
-    // Texture
+    // Texture1
     auto texture = Texture::load(ResourceManager::get_absolute_path("res/textures/icon.png"));
     texture->set_filter_mag(GL_NEAREST);
     texture->set_filter_min(GL_NEAREST);
-    // TextureRect
+    // TextureRect2
     auto texture_rect = std::make_shared<TextureRect>("TextureRect");
     texture_rect->set_position({900.0f, 100.0f});
     texture_rect->set_size({200.0f, 200.0f});
     texture_rect->set_texture(texture);
     
+    auto texture2 = Texture::load(ResourceManager::get_absolute_path("res/textures/lt.jpg"));
+    texture2->set_filter_mag(GL_NEAREST);
+    texture2->set_filter_min(GL_NEAREST);
+    // TextureRect2
+    auto texture_rect2 = std::make_shared<TextureRect>("TextureRect2");
+    texture_rect2->set_position({400.0f, 300.0f});
+    texture_rect2->set_size({400.0f, 400.0f});
+    texture_rect2->set_texture(texture2);
+    texture_rect2->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
+
+
     // Add items
     canvas_layer->add_item(fps_label.get()); 
     canvas_layer->add_item(texture_rect.get());
+    canvas_layer->add_item(texture_rect2.get());
     
     // Viewport
     auto viewport = std::make_shared<Viewport>("MainViewport");
