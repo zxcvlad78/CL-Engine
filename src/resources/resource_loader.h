@@ -1,27 +1,29 @@
-//resource_manager.h
+//resource_loader.h
 
 #pragma once
 
 #include <string>
 #include <memory>
 #include <map>
+#include "object/object.h"
+
 
 namespace Renderer
 {
 	class ShaderProgram;
 }
 
-class ResourceManager
+class ResourceLoader : Object
 {
 public:
-	ResourceManager();
-	ResourceManager(const std::string& executable_path);
-	~ResourceManager() = default;
+	ResourceLoader();
+	ResourceLoader(const std::string& executable_path);
+	~ResourceLoader() = default;
 
-	ResourceManager(const ResourceManager&) = delete;
-	ResourceManager& operator=(const ResourceManager&) = delete;
-	ResourceManager& operator=(const ResourceManager&&) = delete;
-	ResourceManager(ResourceManager&&) = delete;
+	ResourceLoader(const ResourceLoader&) = delete;
+	ResourceLoader& operator=(const ResourceLoader&) = delete;
+	ResourceLoader& operator=(const ResourceLoader&&) = delete;
+	ResourceLoader(ResourceLoader&&) = delete;
 
 	std::string get_file_text(const std::string& relative_file_path) const;
 	std::shared_ptr<Renderer::ShaderProgram> load_shaders(const std::string& shader_name, const std::string& vertex_path, const std::string& fragment_path);

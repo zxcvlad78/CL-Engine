@@ -1,5 +1,5 @@
 #include "label.h"
-#include "resources/resource_manager.h"
+#include "resources/resource_loader.h"
 #include <glad/glad.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H

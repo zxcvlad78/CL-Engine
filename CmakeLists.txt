@@ -7,6 +7,8 @@ project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME} 
     src/main.cpp #
+    src/control/color_rect/color_rect.cpp #
+    src/control/color_rect/color_rect.h #
 	src/engine/engine.cpp #
 	src/engine/engine.h #
     src/engine/main_loop.cpp #
@@ -30,8 +32,8 @@ add_executable(${PROJECT_NAME}
     src/renderer/texture/texture.cpp #
     src/renderer/texture/texture.h #
 
-    src/resources/resource_manager.cpp #
-    src/resources/resource_manager.h #
+    src/resources/resource_loader.cpp #
+    src/resources/resource_loader.h #
 
     src/object/object.cpp #
     src/object/object.h #
@@ -44,6 +46,7 @@ add_executable(${PROJECT_NAME}
 
 	src/canvas_item/canvas_item.cpp #
     src/canvas_item/canvas_item.h #
+
     src/node2d/node2d.cpp #
     src/node2d/node2d.h #
     

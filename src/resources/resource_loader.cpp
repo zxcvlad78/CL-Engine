@@ -1,6 +1,6 @@
-//resource_manager.cpp
+//resource_loader.cpp
 
-#include "resource_manager.h"
+#include "resource_loader.h"
 #include "../renderer/shader_program.h"
 
 #include "sstream"
@@ -18,18 +18,18 @@
     #include <mach-o/dyld.h>
 #endif
 
-ResourceManager::ResourceManager(const std::string& executable_path)
+ResourceLoader::ResourceLoader(const std::string& executable_path)
 {
 	size_t found = executable_path.find_last_of("/\\");
 	m_path = executable_path.substr(0, found);
 }
 
-ResourceManager::ResourceManager()
+ResourceLoader::ResourceLoader()
 {
 	m_path = get_executable_path();
 }
 
-std::string ResourceManager::get_executable_path()
+std::string ResourceLoader::get_executable_path()
 {
     std::string path;
 
@@ -62,7 +62,7 @@ std::string ResourceManager::get_executable_path()
     return path;
 }
 
-std::string ResourceManager::get_absolute_path(const std::string& relative_file_path)
+std::string ResourceLoader::get_absolute_path(const std::string& relative_file_path)
 {
     std::string normalized_relative = relative_file_path;
     std::replace(normalized_relative.begin(), normalized_relative.end(), '\\', '/');
@@ -76,7 +76,7 @@ std::string ResourceManager::get_absolute_path(const std::string& relative_file_
     return result;
 }
 
-std::string ResourceManager::get_file_text(const std::string& relative_file_path) const
+std::string ResourceLoader::get_file_text(const std::string& relative_file_path) const
 {
 	std::filesystem::path full_path = std::filesystem::path(m_path) / relative_file_path;
 
@@ -95,7 +95,7 @@ std::string ResourceManager::get_file_text(const std::string& relative_file_path
 	return buffer.str();
 }
 
-std::shared_ptr<Renderer::ShaderProgram> ResourceManager::load_shaders(const std::string& shader_name, const std::string& vertex_path, const std::string& fragment_path)
+std::shared_ptr<Renderer::ShaderProgram> ResourceLoader::load_shaders(const std::string& shader_name, const std::string& vertex_path, const std::string& fragment_path)
 {
 	std::string vertex_string = get_file_text(vertex_path);
 	if (vertex_string.empty())
@@ -123,7 +123,7 @@ std::shared_ptr<Renderer::ShaderProgram> ResourceManager::load_shaders(const std
 	return new_shader;
 }
 
-std::shared_ptr<Renderer::ShaderProgram> ResourceManager::get_shader_program(const std::string& shader_name)
+std::shared_ptr<Renderer::ShaderProgram> ResourceLoader::get_shader_program(const std::string& shader_name)
 {
 	ShaderProgramsMap::const_iterator it = m_shader_programs.find(shader_name);
 	if (it != m_shader_programs.end())
